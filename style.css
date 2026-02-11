@@ -1,0 +1,187 @@
+/* ==========================================
+   1. ОБЩИЕ СТИЛИ
+   ========================================== */
+:root {
+    --bg-color: #fcf5f8;
+    --pink-ui: #ffb7d5; --pink-dark: #e084a8;
+    --pink-accent: #d68ca3; --text-color: #5e4b56;
+}
+body { margin: 0; font-family: 'Nunito', sans-serif; background-color: #1a1a1a; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+#game-wrapper { width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; }
+#game-container { width: 1024px; height: 768px; background: var(--bg-color); position: relative; border-radius: 20px; overflow: hidden; box-shadow: 0 0 50px rgba(0,0,0,0.5); border: 8px solid white; display: flex; flex-direction: column; }
+.hidden { display: none !important; }
+
+/* ==========================================
+   2. ПЕРЕХОДЫ И ЭКРАНЧИК
+   ========================================== */
+/* Оверлей перехода */
+#glitch-overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: black; z-index: 999; pointer-events: none; opacity: 0;
+    transition: opacity 1s ease-in-out;
+    display: flex; justify-content: center; align-items: center;
+}
+#transition-text {
+    color: white; font-family: 'Fredoka One'; font-size: 4rem;
+    text-shadow: 0 0 20px var(--pink-dark);
+}
+
+/* Экранчик */
+#monitor-helper {
+    position: absolute; top: 20px; right: 40px; 
+    width: 150px; height: 120px;
+    background-image: url('assets/normal_telek.png'); background-size: contain; background-repeat: no-repeat; background-position: center;
+    z-index: 100; pointer-events: none; transition: all 0.8s ease-in-out; 
+    animation: observerFloat 6s ease-in-out infinite;
+}
+@keyframes observerFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+.sans-visual { filter: hue-rotate(200deg) brightness(1.3) drop-shadow(0 0 15px cyan) !important; }
+.sans-shake { animation: sansShake 0.1s infinite !important; }
+@keyframes sansShake { 0% { transform: translate(-50%, -50%) scale(1.2) rotate(0deg); } 25% { transform: translate(-51%, -49%) scale(1.2) rotate(-2deg); } 75% { transform: translate(-50%, -50%) scale(1.2) rotate(0deg); } }
+
+.screeny-center {
+    top: 40% !important; left: 50% !important; right: auto !important; bottom: auto !important;
+    transform: translate(-50%, -50%) scale(1) !important;
+    width: 500px !important; height: 400px !important;
+    z-index: 500 !important; animation: none !important; opacity: 1 !important;
+}
+.kitchen-mode {
+    top: auto !important; bottom: 20px !important; right: 20px !important; left: auto !important;
+    width: 100px !important; height: 80px !important; opacity: 0.8;
+}
+
+/* ==========================================
+   3. МЕНЮ
+   ========================================== */
+#menu-screen {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 200;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    background: linear-gradient(-45deg, #ffdde1, #ffc3a0, #ffafbd, #ffc3a0);
+    background-size: 400% 400%; animation: gradientBG 15s ease infinite;
+}
+@keyframes gradientBG { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+.title { font-family: 'Fredoka One'; font-size: 6rem; color: #fff; text-shadow: 3px 3px 0 var(--pink-dark); margin-bottom: 10px; animation: floatTitle 3s infinite ease-in-out; }
+@keyframes floatTitle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+.subtitle { font-size: 1.8rem; color: #fff; font-weight: 800; margin-bottom: 50px; text-shadow: 2px 2px 0 rgba(0,0,0,0.1); }
+.btn-primary { font-family: 'Fredoka One'; font-size: 2rem; padding: 15px 70px; color: var(--pink-dark); background-color: #fff; border: 3px solid white; border-radius: 50px; cursor: pointer; box-shadow: 0 8px 0 rgba(0,0,0,0.1); transition: 0.2s; }
+.btn-primary:active { transform: translateY(4px); }
+
+/* ==========================================
+   4. НОВЕЛЛА (LAYOUT)
+   ========================================== */
+#vn-screen { 
+    height: 100%; width: 100%; position: relative; 
+    background: radial-gradient(circle, #fff5f8 0%, #e8dbe0 100%); 
+    z-index: 1; display: flex; flex-direction: column; 
+}
+
+#vn-stage {
+    flex: 1; position: relative; overflow: hidden;
+    display: flex; justify-content: center; align-items: flex-end;
+}
+
+#char-left, #char-right {
+    position: absolute; bottom: -20px; width: 480px; height: 90%;
+    background-repeat: no-repeat; background-position: bottom center; background-size: contain;
+    transition: all 0.4s ease-in-out; opacity: 0; filter: brightness(0.8); transform: scale(0.95);
+}
+#char-left.visible, #char-right.visible { opacity: 1; }
+#char-left { left: 40px; z-index: 10; }
+#char-right { right: 40px; z-index: 15; }
+.is-speaking { opacity: 1 !important; filter: brightness(1.1) !important; transform: scale(1.05) !important; z-index: 20 !important; }
+
+/* --- ИНТЕРФЕЙС И ДИАЛОГ (ИСПРАВЛЕНО) --- */
+#vn-ui {
+    height: 300px; position: relative; z-index: 30; flex-shrink: 0;
+    background: #fff; border-top: 5px solid var(--pink-ui);
+    padding: 0; /* Паддинг убрали, он внутри box */
+    box-sizing: border-box; display: flex; flex-direction: column;
+}
+
+#dialogue-box {
+    width: 100%; height: 100%; display: flex; flex-direction: column; 
+    position: relative;
+    padding: 45px 40px 20px 40px; /* !ВАЖНО: 45px сверху отступ для имени */
+    box-sizing: border-box;
+}
+
+#speaker-name {
+    position: absolute; 
+    top: -30px; /* Подняли чуть выше, чтобы висело на рамке */
+    left: 40px;
+    background: var(--pink-dark); color: white;
+    font-family: 'Fredoka One'; font-size: 1.6rem; padding: 10px 40px;
+    border-radius: 20px; border: 3px solid white; box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+    z-index: 35;
+}
+
+#dialogue-text {
+    font-size: 1.4rem; color: var(--text-color); line-height: 1.5;
+    flex-grow: 1; overflow-y: auto; margin-bottom: 10px;
+}
+
+#choices-container {
+    display: flex; flex-direction: column; gap: 10px; align-items: center;
+    width: 100%; margin-top: 15px; /* Отступ сверху */
+}
+.choice-btn {
+    width: 80%; padding: 12px; font-size: 1.1rem; border: 2px solid var(--pink-ui);
+    background: white; border-radius: 30px; cursor: pointer; font-weight: bold; color: var(--text-color);
+    transition: 0.2s;
+}
+.choice-btn:hover { background: var(--pink-ui); color: white; }
+
+#vn-controls {
+    position: absolute; bottom: 20px; right: 30px;
+    display: flex; gap: 15px; align-items: center;
+}
+#next-btn {
+    background: none; border: none; font-family: 'Fredoka One'; font-size: 3rem;
+    color: var(--pink-accent); cursor: pointer; transition: transform 0.2s;
+}
+#next-btn:hover { transform: translateX(5px); }
+#cook-btn {
+    background: var(--pink-dark); color: white; border: none; border-radius: 30px;
+    padding: 10px 30px; font-family: 'Fredoka One'; font-size: 1.4rem;
+    cursor: pointer; animation: pulse 2s infinite;
+}
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+/* ==========================================
+   5. КУХНЯ
+   ========================================== */
+#kitchen-screen { padding: 20px; height: 100%; display: flex; flex-direction: column; box-sizing: border-box; background: #fff0f5; z-index: 2; }
+.kitchen-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; height: 100px; flex-shrink: 0; gap: 15px; }
+.order-note { background: #fff; padding: 10px 15px; border: 3px solid var(--pink-dark); border-radius: 15px; color: var(--text-color); font-size: 1rem; font-style: italic; flex-grow: 1; height: 100%; box-sizing: border-box; overflow-y: auto; display: flex; align-items: center; justify-content: center; text-align: center; }
+#recipe-book-btn { background: #8b4513; color: #fff; border: 3px solid #5e2f0d; padding: 0 20px; height: 50px; margin-top: 25px; border-radius: 10px; cursor: pointer; font-family: 'Fredoka One'; font-size: 1.1rem; flex-shrink: 0; }
+.work-area { display: flex; gap: 15px; flex-grow: 1; overflow: hidden; padding-bottom: 10px; }
+.pantry-container { flex: 0 0 340px; background: #fff; border: 4px solid var(--pink-ui); border-radius: 20px; padding: 10px; display: flex; flex-direction: column; overflow-y: auto; }
+#pantry-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.item-card { height: 80px; background: #fdfbfb; border: 2px solid var(--pink-accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 0.8rem; font-weight: 700; color: var(--text-color); cursor: pointer; padding: 2px; }
+.item-card:hover { background: var(--pink-ui); color: white; }
+.cooking-table { flex: 1; background: #fff; border: 4px solid var(--pink-ui); border-radius: 20px; padding: 20px; display: flex; flex-direction: column; align-items: center; overflow-y: auto; position: relative; }
+.slots-area { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+.slot { width: 80px; height: 80px; border: 3px dashed var(--pink-accent); border-radius: 15px; display: flex; align-items: center; justify-content: center; text-align: center; font-weight: bold; cursor: pointer; padding: 2px; background: #fafafa; font-size: 0.7rem; word-wrap: break-word; }
+.plus-sign { font-size: 1.5rem; color: var(--pink-accent); }
+.actions-panel { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; width: 100%; margin-bottom: 20px; }
+.action-btn { flex: 1 1 120px; max-width: 150px; padding: 12px 5px; background: #fff; border: 2px solid var(--pink-accent); border-radius: 15px; color: var(--text-color); font-weight: 700; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.action-btn:hover { background: var(--pink-ui); color: white; }
+.result-area { display: flex; justify-content: center; gap: 15px; margin-top: auto; width: 100%; }
+.result-box p { margin: 0 0 5px 0; font-size: 0.8rem; color: var(--text-color); text-align: center; }
+.result-slot { border-style: solid; border-color: #ffc107; background-color: #fffbe6; }
+.decision-buttons { margin-top: 20px; display: flex; gap: 20px; margin-bottom: 10px; }
+#serve-dish-btn { background: #4caf50; color: white; padding: 10px 30px; border-radius: 40px; border: none; cursor: pointer; font-family: 'Fredoka One'; font-size: 1.1rem; }
+#trash-btn { background: #e74c3c; color: white; padding: 10px 25px; border-radius: 40px; border: none; cursor: pointer; font-family: 'Fredoka One'; }
+
+#recipe-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 300; display: flex; justify-content: center; align-items: center; }
+.book-content { position: relative; background: #fffcf5; width: 600px; height: 500px; padding: 40px; border-radius: 5px; border-right: 15px solid #8b4513; display: flex; flex-direction: column; }
+#close-book-btn { position: absolute; top: -15px; right: -15px; background: #e74c3c; color: white; width: 40px; height: 40px; border-radius: 50%; border: 3px solid white; cursor: pointer; }
+.book-page-text { font-family: 'Courier New', monospace; flex-grow: 1; overflow-y: auto; line-height: 1.6; font-size: 1.1rem; }
+.book-nav { display: flex; justify-content: space-between; margin-top: 20px; border-top: 1px dashed #ccc; padding-top: 10px; }
+.book-btn { background: none; border: none; font-family: 'Fredoka One'; font-size: 1.5rem; color: #8b4513; cursor: pointer; }
+
+/* ХОРРОР */
+body.horror-mode #game-container { filter: sepia(0.5) contrast(1.2) brightness(0.7); border-color: #4a0000; }
+body.horror-mode #vn-ui { background: #111; border-color: #800000; }
+body.horror-mode #dialogue-text { color: red; font-family: 'Courier New'; text-shadow: 1px 0 red; }
