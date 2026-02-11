@@ -11,7 +11,8 @@ const BASE_INGREDIENTS = [
     
     // Бакалея
     'oil', 'water', 'flour', 'soy_sauce', 'spices', 'spaghetti', 'pancetta', 'eggs', 'cheese', 'pepper', 'cream', 
-    'chocolate', 'butter', 'sugar', 'lavash', 'sauce', 'cocoa', 'biscuit', 'gelatin', 'snow', 'matches', 'soda'
+    'chocolate', 'butter', 'sugar', 'lavash', 'sauce', 'cocoa', 'biscuit', 'gelatin', 'snow', 'matches', 'soda',
+    'tea_leaves', 'milk_condensed' // Новые!
 ];
 
 // ==========================================
@@ -23,7 +24,7 @@ const ITEMS = {
     'salmon_raw': 'Лосось (сырой)',
     'steak_raw': 'Стейк (сырой)',
     'pork': 'Свинина',
-    'beef_mince': 'Гов. фарш', // Для русских пельменей
+    'beef_mince': 'Гов. фарш',
     'chicken': 'Курица',
     'rat': 'Крыса',
     'shaman': 'Шаман',
@@ -40,11 +41,11 @@ const ITEMS = {
     'carrot': 'Морковь',
     'cherry': 'Вишня',
     
-    'oil': 'Масло',
+    'oil': 'Оливк. масло',
     'water': 'Вода',
     'flour': 'Мука',
     'soy_sauce': 'Соевый соус',
-    'spices': 'Приправы',
+    'spices': 'Приправы', // Универсальные специи
     'spaghetti': 'Спагетти',
     'pancetta': 'Панчетта',
     'eggs': 'Яйца',
@@ -62,6 +63,8 @@ const ITEMS = {
     'snow': 'Снег',
     'matches': 'Спички',
     'soda': 'Газировка',
+    'tea_leaves': 'Чайные листья',
+    'milk_condensed': 'Сгущенка',
 
     // --- ПРОМЕЖУТОЧНЫЕ ---
     'lemon_mix': 'Нарезка (Лимон+Зелень)',
@@ -115,8 +118,8 @@ const ITEMS = {
     'butter_sugar': 'Масло+Сахар',
     'wet_mix': 'Масло+Яйца',
     'portal_dough': 'Тесто (Портальное)',
-    'cake_base': 'Коржи',
-    'cherry_mix': 'Вишня в масле',
+    'cake_base': 'Коржи (Печеные)',
+    'cherry_mix': 'Вишня+Масло+Сгущенка', // Обновлено
     'portal_cake_base': 'Торт с кремом',
 
     // --- ГОТОВЫЕ БЛЮДА ---
@@ -191,7 +194,7 @@ const CRAFTING_TABLE = [
     // --- 5. КРАСНАЯ РЫБА В СЛИВКАХ ---
     { inputs: ['salmon_raw', 'spices'], action: 'mix', result: 'salmon_spiced' },
     { inputs: ['salmon_spiced', 'lemon'], action: 'mix', result: 'salmon_lemon' },
-    { inputs: ['cream', 'garlic', 'spices'], action: 'mix', result: 'cream_sauce' },
+    { inputs: ['cream', 'garlic', 'spices'], action: 'mix', result: 'cream_sauce' }, // 3 ингр
     { inputs: ['cream_sauce', 'salmon_lemon'], action: 'mix', result: 'fish_prepared' },
     { inputs: ['fish_prepared'], action: 'bake', result: 'fish_creamy' },
 
@@ -201,21 +204,21 @@ const CRAFTING_TABLE = [
     { inputs: ['eggs', 'sugar'], action: 'mix', result: 'egg_sugar' },
     { inputs: ['choco_butter', 'egg_sugar'], action: 'mix', result: 'cake_dough' },
     { inputs: ['cake_dough'], action: 'bake', result: 'chocolate_cake' },
-    // Комбо сборка
-    { inputs: ['water', 'greens'], action: 'boil', result: 'tea' },
+    // Комбо сборка (ИСПРАВЛЕНО: Чай из листьев)
+    { inputs: ['water', 'tea_leaves'], action: 'boil', result: 'tea' },
     { inputs: ['chocolate_cake', 'tea'], action: 'mix', result: 'sweet_combo_adult' },
     { inputs: ['chocolate_cake', 'soda'], action: 'mix', result: 'sweet_combo_kid' },
 
     // --- 7. ШАУРМА ---
     { inputs: ['chicken'], action: 'bake', result: 'chicken_baked' },
-    { inputs: ['cabbage_white', 'cucumber', 'tomato'], action: 'cut', result: 'shawarma_veg' },
+    { inputs: ['cabbage_white', 'cucumber', 'tomato'], action: 'cut', result: 'shawarma_veg' }, // 3 ингр
     { inputs: ['chicken_baked', 'shawarma_veg'], action: 'mix', result: 'shawarma_fill' },
     { inputs: ['lavash', 'sauce'], action: 'mix', result: 'lavash_wet' },
     { inputs: ['lavash_wet', 'shawarma_fill'], action: 'mix', result: 'shawarma_raw' },
     { inputs: ['shawarma_raw'], action: 'fry', result: 'shawarma' },
 
     // --- 8. РУССКИЕ ПЕЛЬМЕНИ ---
-    { inputs: ['water', 'eggs', 'flour'], action: 'mix', result: 'dough' },
+    { inputs: ['water', 'eggs', 'flour'], action: 'mix', result: 'dough' }, // 3 ингр
     { inputs: ['onion', 'garlic'], action: 'cut', result: 'onion_garlic' },
     { inputs: ['pork', 'beef_mince'], action: 'mix', result: 'meat_mix' }, // Свинина + Гов.Фарш
     { inputs: ['meat_mix', 'onion_garlic', 'spices'], action: 'mix', result: 'filling_ru' },
@@ -238,41 +241,121 @@ const CRAFTING_TABLE = [
     { inputs: ['biscuit', 'cream'], action: 'mix', result: 'cake_layer_1' },
     { inputs: ['biscuit', 'carrot'], action: 'mix', result: 'cake_layer_2' },
     { inputs: ['cake_layer_1', 'cake_layer_2', 'herring_cut'], action: 'mix', result: 'herring_cake' },
+    
+    // ТОРТ ПОРТАЛЬНЫЙ (ИСПРАВЛЕНО: СГУЩЕНКА)
     { inputs: ['flour', 'cocoa'], action: 'mix', result: 'cocoa_mix' },
     { inputs: ['butter', 'sugar'], action: 'mix', result: 'butter_sugar' },
     { inputs: ['butter_sugar', 'eggs'], action: 'mix', result: 'wet_mix' },
     { inputs: ['wet_mix', 'cocoa_mix'], action: 'mix', result: 'portal_dough' },
     { inputs: ['portal_dough'], action: 'bake', result: 'cake_base' },
-    { inputs: ['cherry', 'butter'], action: 'mix', result: 'cherry_mix' },
-    { inputs: ['cake_base', 'cherry_mix'], action: 'mix', result: 'portal_cake_base' },
-    { inputs: ['portal_cake_base', 'cherry'], action: 'mix', result: 'portal_cake' }
+    { inputs: ['cherry', 'butter', 'milk_condensed'], action: 'mix', result: 'cherry_mix' }, // 3 ингр: Вишня+Масло+Сгущенка
+    { inputs: ['cake_base', 'cherry_mix'], action: 'mix', result: 'portal_cake' }
 ];
 
 // ==========================================
-// 4. ТЕКСТ КНИГИ РЕЦЕПТОВ
+// 4. ТЕКСТ КНИГИ РЕЦЕПТОВ (RECIPE_PAGES)
 // ==========================================
 const RECIPE_PAGES = [
-    `<h3>Осетр по-царски</h3><ol><li>Лимон + Зелень (Нарезать) -> Нарезка.</li><li>Нарезка + Осетр (Смешать).</li><li>Осетр + Масло (Смешать).</li><li>Запечь.</li></ol>`,
-    `<h3>Китайские пельмени</h3><ol><li>Вода + Мука (Смешать) -> Тесто.</li><li>Свинина + Пек. капуста (Нарезать) -> Нарезка.</li><li>Нарезка + Зелень (Смешать) -> Фарш.</li><li>Фарш + Соевый соус (Смешать).</li><li>Тесто + Начинка (Смешать).</li><li>Варить.</li></ol>`,
-    `<h3>Стейк с кровью</h3><ol><li>Стейк + Масло (Смешать).</li><li>Стейк + Приправы (Смешать).</li><li>Жарить.</li></ol>`,
-    `<h3>Паста Карбонара</h3><ol><li>Спагетти + Вода (Варить).</li><li>Панчетта (Жарить).</li><li>Яйца + Сыр + Перец (Смешать) -> Смесь.</li><li>Паста + Панчетта + Смесь (Смешать).</li></ol>`,
-    `<h3>Красная рыба в сливках</h3><ol><li>Лосось + Специи (Смешать).</li><li>Лосось + Лимон (Смешать).</li><li>Сливки + Чеснок + Специи (Смешать) -> Соус.</li><li>Соус + Рыба (Смешать).</li><li>Запечь.</li></ol>`,
-    `<h3>Сладкое комбо</h3><ol><li>Шоколад + Сливки (Смешать).</li><li>Смесь + Масло (Смешать).</li><li>Яйца + Сахар (Смешать).</li><li>Две смеси (Смешать) -> Тесто.</li><li>Запечь торт.</li><li><b>Для взрослых:</b> Торт + Чай (Смешать).</li><li><b>Для детей:</b> Торт + Газировка (Смешать).</li></ol>`,
-    `<h3>Шаурма</h3><ol><li>Курица (Запечь).</li><li>Бел. капуста + Огурцы + Помидоры (Нарезать).</li><li>Курица + Овощи (Смешать).</li><li>Лаваш + Соус (Смешать).</li><li>Лаваш + Начинка (Смешать).</li><li>Жарить.</li></ol>`,
-    `<h3>Русские пельмени</h3><ol><li>Вода + Яйца + Мука (Смешать) -> Тесто.</li><li>Лук + Чеснок (Нарезать).</li><li>Свинина + Гов. фарш (Смешать).</li><li>Фарш + Лук/Чеснок + Специи (Смешать).</li><li>Тесто + Начинка (Смешать).</li><li>Варить.</li></ol>`,
-    `<h3>Чай</h3><p>Вода + Зелень (Варить).</p><h3>Жареный снег</h3><p>Снег + Спички (Жарить).</p>`,
-    `<h3>Холодец Шаманка</h3><p>Шаман + Вода (Варить).<br>Бульон + Желатин (Смешать).</p><h3>Крыса по-царски</h3><p>Как Осетр, но с Крысой.</p>`,
-    `<h3>Торт Портальный</h3><p>Мука + Какао (Смешать).<br>Масло + Сахар (Смешать).<br>Масло + Яйца (Смешать).<br>Жидкое + Сухое (Смешать).<br>Запечь.<br>Вишня + Масло (Смешать).<br>Корж + Вишня (Смешать).</p>`
-];
+    `<h3>Осетр по-царски</h3>
+    <p>Нарезать лимон полукольцами. Мелко измельчить петрушку и лук-порей. Нафаршировать этим выпотрошенного осетра, туда же запихнуть несколько веточек тимьяна. Смазать рыбу оливковым маслом. Запекать при температуре 180 градусов в течение 55 минут; достать, снова смазать оливковым маслом, отправить в духовку еще на 5 минут. Достать, дать пять минут настояться. Перед нарезкой снять кожицу. По желанию подавать с хреном и запеченным картофелем.</p>
+    <ol>
+        <li>Лимон + Зелень (Нарезать).</li>
+        <li>Нарезка + Осетр (Смешать).</li>
+        <li>Осетр + Масло (Смешать).</li>
+        <li>Запечь.</li>
+    </ol>`,
 
-const RECIPE_NAMES = {
-    'sturgeon': 'Осетр по-царски', 'dumplings_chinese': 'Кит. пельмени', 'steak': 'Стейк с кровью',
-    'carbonara': 'Паста Карбонара', 'fish_creamy': 'Рыба в сливках', 'sweet_combo_adult': 'Сладкое комбо (Чай)',
-    'sweet_combo_kid': 'Сладкое комбо (Сода)', 'dumplings_russian': 'Русские пельмени', 'shawarma': 'Шаурма',
-    'tea': 'Чай', 'salmon_royal': 'Лосось по-царски', 'fried_snow': 'Жареный снег',
-    'rat_royal': 'Крыса по-царски', 'shaman_jelly': 'Холодец Шаманка', 'herring_cake': 'Торт из селедки',
-    'portal_cake': 'Торт Портальный', 'sweet_combo_duo': 'Сладкое комбо (На двоих)'
-};
+    `<h3>Китайские пельмени</h3>
+    <p><i>Жгучая:</i> Мамино любимое. Тесто должно быть тонким.</p>
+    <ol>
+        <li>Вода + Мука (Смешать) -> Тесто.</li>
+        <li>Свинина + Пек. капуста (Нарезать).</li>
+        <li>Нарезка + Зелень (Смешать).</li>
+        <li>Фарш + Соевый соус (Смешать).</li>
+        <li>Тесто + Начинка (Смешать).</li>
+        <li>Варить.</li>
+    </ol>`,
+
+    `<h3>Стейк с кровью</h3>
+    <p><i>Жгучая:</i> Наше с Мурлыкой любимое. Только Medium Rare.</p>
+    <ol>
+        <li>Стейк + Масло (Смешать).</li>
+        <li>Стейк + Приправы (Смешать).</li>
+        <li>Жарить.</li>
+    </ol>`,
+
+    `<h3>Паста Карбонара</h3>
+    <p><i>Жгучая:</i> Вождь обожает это. Никаких сливок!</p>
+    <ol>
+        <li>Спагетти + Вода (Варить).</li>
+        <li>Панчетта (Жарить).</li>
+        <li>Яйца + Сыр + Перец (Смешать) -> Соус.</li>
+        <li>Паста + Панчетта + Соус (Смешать).</li>
+    </ol>`,
+
+    `<h3>Красная рыба в сливках</h3>
+    <p><i>Жгучая:</i> Для мамы Солнца. Нежно и сливочно.</p>
+    <ol>
+        <li>Лосось + Приправы (Смешать).</li>
+        <li>Лосось + Лимон (Смешать).</li>
+        <li>Сливки + Чеснок + Приправы (Смешать).</li>
+        <li>Соус + Рыба (Смешать).</li>
+        <li>Запечь.</li>
+    </ol>`,
+
+    `<h3>Сладкое комбо</h3>
+    <p><i>Жгучая:</i> Для моих девочек. Не перепутать напитки!</p>
+    <ol>
+        <li>Шоколад + Сливки (Смешать).</li>
+        <li>Смесь + Масло (Смешать).</li>
+        <li>Яйца + Сахар (Смешать).</li>
+        <li>Две смеси (Смешать) -> Тесто.</li>
+        <li>Запечь торт.</li>
+        <li><b>Взрослым:</b> Торт + Чай (Смешать).</li>
+        <li><b>Детям:</b> Торт + Газировка (Смешать).</li>
+    </ol>`,
+
+    `<h3>Шаурма</h3>
+    <p><i>Жгучая:</i> Когда хочется вредного и быстрого.</p>
+    <ol>
+        <li>Курица (Запечь).</li>
+        <li>Бел. капуста + Огурцы + Помидоры (Нарезать).</li>
+        <li>Курица + Овощи (Смешать).</li>
+        <li>Лаваш + Соус (Смешать).</li>
+        <li>Лаваш + Начинка (Смешать).</li>
+        <li>Жарить.</li>
+    </ol>`,
+
+    `<h3>Русские пельмени</h3>
+    <p><i>Жгучая:</i> Сытно и по-домашнему.</p>
+    <ol>
+        <li>Вода + Яйца + Мука (Смешать) -> Тесто.</li>
+        <li>Лук + Чеснок (Нарезать).</li>
+        <li>Свинина + Гов. фарш (Смешать).</li>
+        <li>Фарш + Нарезка + Приправы (Смешать).</li>
+        <li>Тесто + Начинка (Смешать).</li>
+        <li>Варить.</li>
+    </ol>`,
+
+    `<h3>Напитки</h3>
+    <p><b>Зеленый чай:</b> Вода + Чайные листья (Варить).</p>
+    <p><b>Газировка:</b> Просто взять с полки.</p>
+    <h3>Жареный снег</h3>
+    <p><i>Жгучая:</i> Кто вообще это придумал?</p>
+    <p>Снег + Спички (Жарить).</p>`,
+
+    `<h3>Торт Портальный</h3>
+    <p><i>Жгучая:</i> Экспериментальный рецепт. Выглядит странно.</p>
+    <ol>
+        <li>Мука + Какао (Смешать).</li>
+        <li>Слив. масло + Сахар (Смешать).</li>
+        <li>Смесь(масло) + Яйца (Смешать).</li>
+        <li>Смесь(жидкая) + Смесь(сухая) (Смешать) -> Тесто.</li>
+        <li>Запечь корж.</li>
+        <li>Вишня + Слив. масло + Сгущенка (Смешать) -> Крем.</li>
+        <li>Корж + Крем (Смешать).</li>
+    </ol>`,
+];
 
 
 // ==========================================
@@ -308,23 +391,23 @@ const SCENES = {
     },
 
     // ---------------- ПРОЛОГ ----------------
-    'prologue_start': { text: "Отвратительный, раздражающий звон в висках. Веки будто налиты свинцом...", speaker: "", next: 'prologue_1' },
-    'prologue_1': { text: "Мир вокруг слишком яркий... Лежу на холодной плитке. Сверху нависает приторно-розовый потолок.", speaker: "", sprite: "krapiva_pain", choices: [{ text: "[Сесть]", target: 'action_sit' }] },
-    'action_sit': { text: "Голова на секунду идет кругом. Шкафчики цвета сахарной ваты пускаются в хоровод...", speaker: "", sprite: "krapiva_dizzy", next: 'desc_kitchen_1' },
-    'desc_kitchen_1': { text: "Это кухня, но словно сошедшая с детского рисунка. Кто-то специально подбирал самые тошнотворные цвета.", speaker: "", sprite: "krapiva_dizzy", next: 'desc_music' },
-    'desc_music': { text: "Сквозь вату в ушах наконец прорезается беззаботная, веселая мелодия.", speaker: "", sprite: "krapiva_dizzy", next: 'thoughts_1' },
-    'thoughts_1': { text: "«Что это за место? Как я здесь очутилась?»", speaker: "Жгучая Крапива", sprite: "krapiva_confused", next: 'thoughts_2' },
-    'thoughts_2': { text: "Последнее, что вспоминается — вспышка света, запах озона и ощущение падения... И вот результат: розовая клетка.", speaker: "", sprite: "krapiva_dizzy", next: 'screen_appears' },
-    'screen_appears': { text: "Внезапно воздух потрескивает, и перед лицом появляется улыбчивая мордочка летающего экрана.", speaker: "", sprite: "krapiva_dizzy", showScreeny: true, next: 'screen_hello' },
-    'screen_hello': { text: "«Добро пожаловать, Жгучая Крапива! Мы так рады видеть Вас на вашем новом рабочем месте!»", speaker: "Экранчик", sprite: "krapiva_dizzy", showScreeny: true, choices: [{ text: "[Отпрянуть]", target: 'action_recoil' }] },
-    'action_recoil': { text: "Я отпрянула, инстинктивно приняв оборонительную позу. Волоски на загривке встали дыбом.", speaker: "", sprite: "krapiva_scared", showScreeny: true, next: 'screen_task' },
-    'screen_task': { text: "«Не стоит волноваться! Ваша задача проста и увлекательна! Вам предстоит обслуживать гостей...»", speaker: "Экранчик", sprite: "krapiva_dizzy", showScreeny: true, next: 'screen_task_2' },
-    'screen_task_2': { text: "«...Они будут счастливы, сыты и довольны. А ваша цель — сделать их счастливыми, сытыми и довольными!»", speaker: "Экранчик", sprite: "krapiva_dizzy", showScreeny: true, choices: [{ text: "[Спросить про это место]", target: 'screen_book' }, { text: "[Потребовать ответы]", target: 'screen_book' }] },
-    'screen_book': { text: "«Для вашего удобства вот книга рецептов. Строго следуйте инструкциям. Удачи! Помните: улыбка — лучший соус!»", speaker: "Экранчик", sprite: "krapiva_dizzy", showScreeny: true, next: 'book_get' },
-    'book_get': { text: "С легким щелчком в мои руки падает тяжелый том: «Кулинарный кодекс. Том I. Основы угождения».", speaker: "", sprite: "krapiva_dizzy", showScreeny: true, next: 'kitchen_alive' },
-    'kitchen_alive': { text: "Кухня вокруг моментально оживает. Музыка становится громче, цвета – ярче. Головная боль притупляется.", speaker: "", sprite: "krapiva_dizzy", showScreeny: true, choices: [{ text: "[Ущипнуть себя]", target: 'choice_pinch' }, { text: "[Подняться на ноги]", target: 'choice_stand' }] },
-    'choice_pinch': { text: "Резкая боль... Не сон. Значит, так просто не улизнуть. Приходится подняться на ноги.", speaker: "Жгучая Крапива", sprite: "krapiva_angry", showScreeny: true, next: 'final_stand' },
-    'choice_stand': { text: "Хватаясь за столешницу, я поднимаюсь на ноги. Мир больше не идет кругом, что уже хорошо.", speaker: "Жгучая Крапива", sprite: "krapiva_calm", showScreeny: true, next: 'final_stand' },
+    'prologue_start': { text: "Отвратительный, раздражающий звон в висках. Веки будто налиты свинцом, и я едва смогла распахнуть глаза, но тут же была вынуждена прикрыть их лапой. Мир вокруг слишком яркий, слишком броский, проступающий будто сквозь мутную воду.", speaker: "", next: 'prologue_1' },
+    'prologue_1': { text: "Тупая боль пульсирует где-то в затылке. Как-то запоздало приходит осознание, что лежу на холодной плитке. Сверху нависает приторно-розовый, отвратно яркий потолок.", speaker: "", sprite: "krapiva_pain", choices: [{ text: "[Сесть]", target: 'action_sit' }] },
+    'action_sit': { text: "Голова на секунду идет кругом из-за резкой смены положения. Шкафчики цвета сахарной ваты пускаются в хоровод, и приходится ухватиться за ножку стола, чтобы не плюхнуться обратно спиной вперёд. ", speaker: "", sprite: "krapiva_dizzy", next: 'desc_kitchen_1' },
+    'desc_kitchen_1': { text: "Окружающее пространство не спешит обретать смысл. Более того, от интерьера пульсация в голове усиливается. Это кухня, но словно сошедшая с детского рисунка. Возникает ощущение, будто кто-то специально подбирал самые тошнотворные цвета.", speaker: "", sprite: "krapiva_dizzy", next: 'desc_music' },
+    'desc_music': { text: "В воздухе витает приторный, искусственный аромат, похожий на жевательную резинку. Сквозь вату в ушах наконец прорезается мелодия – беззаботная, весёлая, с назойливыми синтезаторными переливами, застревающая в голове.", speaker: "", sprite: "krapiva_dizzy", next: 'thoughts_1' },
+    'thoughts_1': { text: "«Что это за место? Как я здесь очутилась?»  – кружатся вопросы в голове, не находя ответа в затуманенном разуме.", speaker: "Жгучая Крапива", sprite: "krapiva_confused", next: 'thoughts_2' },
+    'thoughts_2': { text: "Последнее, что вспоминается, — вспышка ослепительного света, резкий запах озона и ощущение падения сквозь слои реальности. И вот результат: розовая клетка.", speaker: "", sprite: "krapiva_dizzy", next: 'screen_appears' },
+    'screen_appears': { text: "Внезапно воздух потрескивает, и перед лицом появляется улыбчивая мордочка. Летающий в воздухе экран, висящий в пространстве без всяких проводов и крепежей, излучая розоватое свечение. На нем только один статичный смайлик: неестественно широкая нарисованная улыбка.", speaker: "", sprite: "krapiva_dizzy", showScreeny: true, next: 'screen_hello' },
+    'screen_hello': { text: "«Добро пожаловать, Жгучая Крапива! – раздается звонкий, механически-бодрый голос, исходящий отовсюду и ниоткуда одновременно. – Мы так рады видеть Вас на Вашем новом рабочем месте!»", speaker: "Экранчик", sprite: "krapiva_dizzy", showScreeny: true, choices: [{ text: "[Отпрянуть]", target: 'action_recoil' }] },
+    'action_recoil': { text: "Я дергаюсь назад, инстинктивно приняв оборонительную позу. Волоски на загривке встают дыбом, словно частокол шерстяных копьев. ", speaker: "", sprite: "krapiva_scared", showScreeny: true, next: 'screen_task' },
+    'screen_task': { text: "«Не стоит волноваться! Ваша задача проста и увлекательна!» — продолжает экран, его улыбка, кажется, становится ещё шире, ещё неестественнее.", speaker: "Экранчик", sprite: "krapiva_dizzy", showScreeny: true, next: 'screen_task_2' },
+    'screen_task_2': { text: "«Вам предстоит обслуживать гостей. Очень, очень важных гостей. Они будут счастливы, сыты и довольны. А ваша цель — сделать их счастливыми, сытыми и довольными!»", speaker: "Экранчик", sprite: "krapiva_dizzy", showScreeny: true, choices: [{ text: "[Спросить про это место]", target: 'screen_book' }, { text: "[Потребовать ответы]", target: 'screen_book' }] },
+    'screen_book': { text: "«Для вашего удобства вот книга рецептов. Строго следуйте инструкциям. Творчество приветствуется, но только в разрешённых рамках! Удачи! Помните: улыбка — лучший соус!»", speaker: "Экранчик", sprite: "krapiva_dizzy", showScreeny: true, next: 'book_get' },
+    'book_get': { text: "С легким щелчком из ниоткуда в мои руки падает тяжелый том. Кожаный переплёт холодный и странно живой на ощупь. На обложке ровными золотыми буквами выведено: «Кулинарный кодекс. Том I. Основы угождения».", speaker: "", sprite: "krapiva_dizzy", showScreeny: true, next: 'kitchen_alive' },
+    'kitchen_alive': { text: "Кухня вокруг моментально оживает. Музыка будто становится громче, цвета – ярче (куда ещё ярче-то?). Конфорки на плите зажигаются сами собой, шкафчики приветственно хлопают своими дверцами, знаменуя начало смены. Головная боль притупляется.", speaker: "", sprite: "krapiva_dizzy", showScreeny: true, choices: [{ text: "[Ущипнуть себя]", target: 'choice_pinch' }, { text: "[Подняться на ноги]", target: 'choice_stand' }] },
+    'choice_pinch': { text: "Резкая, но скоротечная боль расцветает на коже, заставляя меня раздосадованно зашипеть. Всё-таки не бредовый сон. Значит, так просто улизнуть не получится. Приходится ухватиться за столешницу и подняться на ноги.", speaker: "Жгучая Крапива", sprite: "krapiva_angry", showScreeny: true, next: 'final_stand' },
+    'choice_stand': { text: "Хватаясь лапой за столешницу, что так услужливо пристроилась рядом, я поднимаюсь на ноги. Мир больше не идёт кругом, что, наверное, уже хорошо. Хотя могло быть и лучше.", speaker: "Жгучая Крапива", sprite: "krapiva_calm", showScreeny: true, next: 'final_stand' },
     'final_stand': { text: "Что ж... Кажется, выбора пока нет. Придется играть по правилам.", speaker: "Жгучая Крапива", sprite: "krapiva_calm", showScreeny: true, next: 'START_GAME' },
 
     // ==========================================
@@ -597,58 +680,67 @@ const KRAPIVA_THOUGHTS = {
 // 8. ДИАЛОГИ ЭКРАНЧИКА (УТРО) - ОБНОВЛЕНО
 // ==========================================
 const SCREENY_DIALOGUES = {
-    // ЧАСТЬ 1: Вступление (Текст)
+    // ДЕНЬ 2: ОБЫЧНЫЙ
     'morning_d2_start': {
-        text: "Я смотрю на Экранчика. Экранчик смотрит на меня в ответ, слегка покачиваясь в воздухе.",
-        speaker: "", // Мысли
-        next: 'morning_d2_menu' // Переход к выбору
-    },
-
-    // ЧАСТЬ 2: Меню выбора
-    'morning_d2_menu': {
-        text: "«Какие-то вопросы? Я здесь, чтобы помогать. Задавайте, задавайте! Ваш комфорт и понимание – мой приоритет номер один!»",
-        speaker: "Экранчик",
-        showScreeny: true,
+        text: "«Какие-то вопросы? Я здесь, чтобы помогать. Задавайте!»",
+        speaker: "Экранчик", showScreeny: true,
         choices: [
             { text: "Что это за место?", target: 'screen_q_place' },
             { text: "Почему гости не помнят вчера?", target: 'screen_q_memory' },
             { text: "Когда я смогу уйти?", target: 'screen_q_leave' },
-            { text: "Что будет, если я нагрублю?", target: 'screen_q_rude' },
-            { text: "Что было с тем гостем? (Глитч)", target: 'screen_q_glitch', condition: 'glitch_seen' }
+            { text: "Что будет, если я нагрублю?", target: 'screen_q_rude' }
         ]
     },
+    // Ответы для Дня 2
+    'screen_q_place': { text: "«Это кафе «Дримсайд»! Место абсолютного счастья!»", speaker: "Экранчик", showScreeny: true, next: 'screen_morning_end' },
+    'screen_q_memory': { text: "«Для свежести впечатлений! Каждый визит как первый!»", speaker: "Экранчик", showScreeny: true, next: 'screen_morning_end' },
+    'screen_q_leave': { text: "«О каком «уходе» речь? Поток гостей бесконечен!»", speaker: "Экранчик", showScreeny: true, next: 'screen_morning_end' },
+    'screen_q_rude': { text: "«Ошибки вносят дисгармонию. Просто следуйте инструкциям!»", speaker: "Экранчик", showScreeny: true, next: 'screen_morning_end' },
 
-    // Ответы (Все ведут к screen_morning_end)
-    'screen_q_place': {
-        text: "Экранчик делает сальто.\n«Это? О, это чудесное место! Вы находитесь в сердцевине кафе «Дримсайд»! Ваша цель — сделать гостей счастливыми!»",
-        speaker: "Экранчик", showScreeny: true, next: 'screen_morning_end'
+    // ДЕНЬ 3: ПРЕДУПРЕЖДЕНИЕ
+    'morning_d3_start': {
+        text: "«День третий. Теперь ты работаешь самостоятельно. Экранчик больше не будет исправлять твои ошибки. Будь внимательна.»",
+        speaker: "", // Рассказчик
+        next: 'START_GAME'
     },
-    'screen_q_memory': {
-        text: "«Ах, это для свежести впечатлений! Каждый визит как первый поцелуй! Зачем помнить прошлое, когда есть сладкое настоящее?»",
-        speaker: "Экранчик", showScreeny: true, next: 'screen_morning_end'
+    
+    // ХОРРОР-РЕЖИМ: Утро
+    'morning_horror': {
+        text: "Экранчик молча смотрит на тебя. Его улыбка кажется шире.",
+        speaker: "", showScreeny: true,
+        choices: [
+            { text: "Что это за место?", target: 'horror_q_ignore' },
+            { text: "Почему гости...", target: 'horror_q_ignore' },
+            { text: "Когда я уйду?", target: 'horror_q_ignore' }
+        ]
     },
-    'screen_q_leave': {
-        text: "«Ваш энтузиазм понятен! Но, коллега, о каком «уходе» может идти речь? Рабочая смена завершится, как только будет обслужен последний гость.»",
-        speaker: "Экранчик", showScreeny: true, next: 'screen_morning_end'
-    },
-    'screen_q_rude': {
-        text: "«О-хо-хо! Правила «Дримсайда» — это залог безопасности. Их нарушение вносит дисгармонию. Просто следуйте инструкциям!»",
-        speaker: "Экранчик", showScreeny: true, next: 'screen_morning_end'
-    },
-    'screen_q_glitch': {
-        text: "«Глитч? Ох, кажется, кое-кто переработал! Это же было просто микроволновое помешательство. Ничего страшного!»",
-        speaker: "Экранчик", showScreeny: true, next: 'screen_morning_end'
+    'horror_q_ignore': {
+        text: "«...»",
+        speaker: "Экранчик", showScreeny: true, next: 'START_GAME'
     },
 
+    // ХОРРОР-РЕЖИM: Конец дня
+    'horror_end_day': {
+        text: "Я смотрю на Экранчика. Экранчик смотрит на меня в ответ.",
+        speaker: "", showScreeny: true,
+        choices: [
+            { text: "Что было с тем гостем? Он был как… глитч", target: 'horror_end_day_answer' }
+        ]
+    },
+    'horror_end_day_answer': {
+        text: "Улыбка Экранчика чуть увеличивается.\n«Глитч? Ох, кажется, кое-кто переработал! Это же было просто микроволновое помешательство — безобидный сбой. Ничего страшного. А теперь — глубокий вдох, улыбка, и продолжаем дарить радость!»",
+        speaker: "Экранчик", showScreeny: true, next: 'START_HORROR_DAY' // Метка для начала нового хоррор-дня
+    },
+    
     // Финал утра -> СТАРТ СМЕНЫ
     'screen_morning_end': {
-        text: "«Ну ладно, – бормочу я. – Тогда второй вопрос…»\nЭкранчик подлетает ближе.\n«А-а-а, – перебивает он. – Не все сразу! Другие вопросы задашь завтра. А сейчас – твоя смена начинается!»",
+        text: "«Не все сразу! Другие вопросы задашь завтра. А сейчас – твоя смена начинается!»",
         speaker: "Экранчик", showScreeny: true, next: 'START_GAME'
     },
 
     // Блокировка ошибки
     'block_mistake': {
-        text: "Экранчик преграждает путь: «Ай-ай-ай! Это не то, что заказал наш Дорогой Гость! Мы не можем расстраивать их. Переделай!»",
+        text: "Экранчик преграждает путь: «Ай-ай-ай! Это не то, что заказал наш Дорогой Гость! Переделай!»",
         speaker: "Экранчик", showScreeny: true, type: 'blocking'
     }
 };

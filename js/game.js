@@ -3,6 +3,7 @@ class Game {
         this.currentScene = null;
         this.screenyUnlocked = false;
         
+        // Состояние игры
         this.day = 1; 
         this.maxGuestsPerDay = 3; 
         this.dailyQueue = []; 
@@ -10,6 +11,7 @@ class Game {
         this.currentGuestData = null;
         this.karma = 0;
         
+        // Флаги режимов
         this.isHorrorMode = false; 
         this.sawGlitch = false;
         this.isSans = false;
@@ -41,9 +43,10 @@ class Game {
 
     loadScene(sceneId) {
         if (sceneId === 'START_GAME') {
-            if (this.day === 1) this.startKitchenDay(); 
-            else this.startKitchenDay(); // Для 2 дня тоже (диалог с экранчиком уже прошел)
-            return;
+            this.startKitchenDay(); return;
+        }
+        if (sceneId === 'START_HORROR_DAY') {
+            this.transitionToDay(); return;
         }
 
         let scene = SCENES[sceneId] || SCREENY_DIALOGUES[sceneId] || HORROR_SCENES[sceneId];
@@ -78,16 +81,15 @@ class Game {
         if (scene.speaker === "Жгучая Крапива") charLeft.classList.add('is-speaking');
         else if (scene.speaker && scene.speaker !== "Экранчик") charRight.classList.add('is-speaking');
 
-        // 2. ЭКРАНЧИК (ФИКС ЦВЕТА)
+        // 2. ЭКРАНЧИК
         const monitor = document.getElementById('monitor-helper');
         monitor.classList.remove('screeny-center');
         monitor.classList.remove('sans-shake');
         
-        // СБРОС ЦВЕТА, ЕСЛИ НЕ САНС
         if (this.isSans) {
             monitor.classList.add('sans-visual');
         } else {
-            monitor.classList.remove('sans-visual'); // <--- ВАЖНО!
+            monitor.classList.remove('sans-visual');
         }
 
         if (scene.showScreeny) {
@@ -151,7 +153,7 @@ class Game {
         }, 10);
 
         setTimeout(() => {
-            textEl.innerText = `НАЧАЛО ДНЯ ${this.day}`;
+            textEl.innerText = this.isHorrorMode ? "НАЧАЛО ДНЯ ???" : `НАЧАЛО ДНЯ ${this.day}`;
             
             setTimeout(() => {
                 textEl.innerText = ""; 
@@ -164,18 +166,27 @@ class Game {
                 
                 overlay.style.opacity = '0';
                 setTimeout(() => { overlay.classList.add('hidden'); }, 1000);
-                
             }, 2000);
         }, 1000);
     }
 
+    // --- УТРО С ЭКРАНЧИКОМ ---
     startScreenyMorning() {
         document.getElementById('kitchen-screen').classList.add('hidden');
         document.getElementById('vn-screen').classList.remove('hidden');
-        // Загружаем диалог с выбором вопросов
-        this.loadScene('morning_d2_start');
+        
+        if (this.isHorrorMode) {
+            this.loadScene('morning_horror');
+        } else if (this.day === 2) {
+            this.loadScene('morning_d2_start');
+        } else if (this.day === 3) {
+            this.loadScene('morning_d3_start');
+        } else {
+            this.startKitchenDay();
+        }
     }
     
+    // --- НАЧАЛО РАБОТЫ ---
     startKitchenDay() {
         console.log(`--- НАЧАЛО ДНЯ ${this.day} ---`);
         document.getElementById('vn-screen').classList.add('hidden');
@@ -187,11 +198,10 @@ class Game {
         this.nextGuest();
     }
 
+    // --- СЛЕДУЮЩИЙ ГОСТЬ ---
     nextGuest() {
         if (this.dailyQueue.length === 0) {
-            // КОНЕЦ СМЕНЫ (БЕЗ АЛЕРТА)
-            this.day++; 
-            this.transitionToDay(); 
+            this.endDay(); 
             return;
         }
         
@@ -217,7 +227,7 @@ class Game {
         }, 100);
     }
 
-    // --- КУХНЯ ---
+    // --- ПЕРЕХОД НА КУХНЮ ---
     goToKitchen() {
         document.getElementById('vn-screen').classList.add('hidden');
         document.getElementById('kitchen-screen').classList.remove('hidden');
@@ -225,11 +235,7 @@ class Game {
         const monitor = document.getElementById('monitor-helper');
         monitor.classList.remove('screeny-center'); 
         monitor.classList.remove('sans-shake');
-        
-        // ФИКС ЦВЕТА НА КУХНЕ
         if (this.isSans) monitor.classList.add('sans-visual');
-        else monitor.classList.remove('sans-visual');
-
         monitor.classList.add('kitchen-mode');      
         monitor.classList.remove('hidden');
 
@@ -239,9 +245,11 @@ class Game {
         }
     }
 
+    // --- ФИНАЛ ГОТОВКИ ---
     finishCooking(resultItem) {
         const isCorrect = (resultItem === this.currentOrder);
         
+        // 0. ПАСХАЛКА
         if (this.day <= 2 && resultItem === 'fried_snow') {
             document.getElementById('kitchen-screen').classList.add('hidden');
             document.getElementById('vn-screen').classList.remove('hidden');
@@ -252,18 +260,16 @@ class Game {
             return;
         }
 
+        // 1. КОНТРОЛЬ (Дни 1-2)
         if (this.day <= 2 && !isCorrect) {
             document.getElementById('kitchen-screen').classList.add('hidden');
             document.getElementById('vn-screen').classList.remove('hidden');
+            document.getElementById('monitor-helper').classList.remove('kitchen-mode');
             this.loadScene('block_mistake'); 
             return;
         }
 
-        if (this.day > 2 && !isCorrect) {
-            this.triggerHorrorMode();
-            return;
-        }
-
+        // 3. УСПЕШНАЯ ПОДАЧА ИЛИ ОШИБКА (День 3+)
         document.getElementById('kitchen-screen').classList.add('hidden');
         document.getElementById('vn-screen').classList.remove('hidden');
         
@@ -275,19 +281,20 @@ class Game {
         cookBtn.classList.add('hidden');
         nextBtn.classList.remove('hidden');
 
-        let reactionText = "";
+        // РЕАКЦИИ
         const guestId = this.currentGuestData.id;
         const reactionData = GUEST_REACTIONS_DATA[guestId];
+        let reactionText = "";
         
         if (isCorrect) {
             this.karma++;
-            if (resultItem === reactionData.fav_dish) reactionText = reactionData.favorite;
-            else reactionText = reactionData.correct;
+            reactionText = (resultItem === reactionData.fav_dish) ? reactionData.favorite : reactionData.correct;
         } else {
             this.karma--;
             reactionText = reactionData.wrong;
         }
 
+        // Мысли Жгучей
         const thought = KRAPIVA_THOUGHTS.serving[Math.floor(Math.random() * KRAPIVA_THOUGHTS.serving.length)];
         
         document.getElementById('speaker-name').innerText = "Жгучая Крапива";
@@ -296,6 +303,7 @@ class Game {
         document.getElementById('char-left').classList.add('is-speaking');
         document.getElementById('char-right').classList.remove('is-speaking');
 
+        // Клик 1: Показываем реакцию
         nextBtn.onclick = () => {
             document.getElementById('speaker-name').innerText = this.currentGuestData.name;
             document.getElementById('dialogue-text').innerText = reactionText;
@@ -303,29 +311,51 @@ class Game {
             document.getElementById('char-left').classList.remove('is-speaking');
             document.getElementById('char-right').classList.add('is-speaking');
             
+            // Клик 2: Гость уходит ИЛИ запускается хоррор
             nextBtn.onclick = () => {
                 nextBtn.onclick = () => this.nextStep(); 
                 document.getElementById('char-right').classList.remove('visible');
                 this.currentGuestData = null;
-                this.nextGuest();
+
+                if (this.day > 2 && !isCorrect) {
+                    this.triggerHorrorMode();
+                } else {
+                    this.nextGuest();
+                }
             };
         };
     }
 
+    // --- КОНЕЦ ДНЯ ---
+    endDay() {
+        this.day++;
+        if (this.isHorrorMode) {
+            document.getElementById('vn-screen').classList.remove('hidden');
+            this.loadScene('horror_end_day');
+        } else {
+            this.transitionToDay();
+        }
+    }
+
+    // --- ХОРРОР-ТРИГГЕР ---
     triggerHorrorMode() {
+        console.log("!!! HORROR MODE ACTIVATED !!!");
         this.isHorrorMode = true;
         this.sawGlitch = true;
         document.body.classList.add('horror-mode');
+        
         const overlay = document.getElementById('glitch-overlay');
+        const textEl = document.getElementById('transition-text');
         overlay.classList.remove('hidden');
-        overlay.style.opacity = 1;
+        textEl.innerText = "";
+        
+        setTimeout(() => { overlay.style.opacity = '1'; }, 10);
+        
         setTimeout(() => {
-            alert("ТЫ ОШИБЛАСЬ. ТЕПЕРЬ ОНИ ЗНАЮТ.");
-            document.getElementById('kitchen-screen').classList.add('hidden');
-            this.currentGuestData = null;
-            this.nextGuest();
-            overlay.style.opacity = 0;
-            setTimeout(() => { overlay.classList.add('hidden'); }, 2000);
+            textEl.innerText = "ЧТО-ТО ПОШЛО НЕ ТАК";
+            setTimeout(() => {
+                this.endDay(); // Завершаем день
+            }, 3000);
         }, 1000);
     }
 }
