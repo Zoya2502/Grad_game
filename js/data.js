@@ -2,17 +2,27 @@
 // 0. СПИСОК ИНГРЕДИЕНТОВ НА ПОЛКЕ
 // ==========================================
 const BASE_INGREDIENTS = [
-    // Рыба и Мясо
-    'sturgeon_raw', 'steak_raw', 'pork', 'beef_mince', 'salmon_raw', 'chicken', 
-    'rat', 'shaman', 'herring',
-    
-    // Овощи и Фрукты
+    'sturgeon_raw', 'steak_raw', 'pork', 'beef_mince', 'salmon_raw', 'chicken',
     'lemon', 'greens', 'cabbage', 'onion', 'garlic', 'cabbage_white', 'cucumber', 'tomato', 'carrot', 'cherry',
-    
-    // Бакалея
     'oil', 'water', 'flour', 'soy_sauce', 'spices', 'spaghetti', 'pancetta', 'eggs', 'cheese', 'pepper', 'cream', 
-    'chocolate', 'butter', 'sugar', 'lavash', 'sauce', 'cocoa', 'biscuit', 'gelatin', 'snow', 'matches', 'soda',
-    'tea_leaves', 'milk_condensed' // Новые!
+    'chocolate', 'butter', 'sugar', 'lavash', 'sauce', 'cocoa', 'biscuit', 'gelatin', 'snow', 'matches', 'soda', 
+    'tea_leaves', 'milk_condensed'
+];
+
+// Хоррор режим (Сюда входят странные ингредиенты)
+const HORROR_INGREDIENTS = [
+    // База для стейка и других
+    'steak_raw', 'oil', 'spices', 
+    
+    // Остальные ингредиенты для хоррор-рецептов
+    'lemon', 'greens', 'water', 'flour', 'soy_sauce', 'salt', 'lavash', 'tomato', 'cucumber', 
+    'cabbage', 'cabbage_white', 'onion', 'garlic', 'biscuit', 
+    
+    // Странные
+    'rat', 'shaman', 'herring', 'kitten_meat', 'blood_chef', 'carrot_korean', 'sweet_cream', 'meat_strange',
+    
+    // Пасхалка
+    'snow', 'matches'
 ];
 
 // ==========================================
@@ -141,7 +151,17 @@ const ITEMS = {
     'herring_cake': 'Торт из селедки',
     'portal_cake': 'Торт Портальный',
 
-    'trash': 'Мусор (Ошибка)'
+    'trash': 'Мусор (Ошибка)',
+
+    'salt': 'Соль',
+    'kitten_meat': 'Котенок???',
+    'blood_chef': 'Кровь повара',
+    'carrot_korean': 'Морковь по-корейски',
+    'sweet_cream': 'Сладкий крем',
+    'meat_strange': 'Мясо (Странное)',
+    'stuffing_strange': 'Начинка (Странная)',
+    'shawarma_station': 'Шаурма вокзальная',
+    'herring_cake': 'Торт из селедки',
 };
 
 // ==========================================
@@ -249,7 +269,51 @@ const CRAFTING_TABLE = [
     { inputs: ['wet_mix', 'cocoa_mix'], action: 'mix', result: 'portal_dough' },
     { inputs: ['portal_dough'], action: 'bake', result: 'cake_base' },
     { inputs: ['cherry', 'butter', 'milk_condensed'], action: 'mix', result: 'cherry_mix' }, // 3 ингр: Вишня+Масло+Сгущенка
-    { inputs: ['cake_base', 'cherry_mix'], action: 'mix', result: 'portal_cake' }
+    { inputs: ['cake_base', 'cherry_mix'], action: 'mix', result: 'portal_cake' },
+
+    // Крыса по-царски
+    { inputs: ['lemon', 'greens'], action: 'cut', result: 'lemon_mix' }, // Лимон+Зелень
+    { inputs: ['rat', 'lemon_mix'], action: 'mix', result: 'rat_stuffed' }, // Крыса+Нарезка
+    { inputs: ['rat_stuffed', 'oil'], action: 'mix', result: 'rat_oiled' },
+    { inputs: ['rat_oiled'], action: 'bake', result: 'rat_royal' },
+
+    // Китайские пельмени (Хоррор: Мясо странное)
+    { inputs: ['water', 'flour'], action: 'mix', result: 'dough' },
+    { inputs: ['meat_strange', 'cabbage'], action: 'cut', result: 'meat_base' }, 
+    { inputs: ['meat_base', 'greens'], action: 'mix', result: 'meat_greens' },
+    { inputs: ['meat_greens', 'soy_sauce'], action: 'mix', result: 'filling_chinese' },
+    { inputs: ['filling_chinese', 'dough'], action: 'mix', result: 'dumpling_raw' },
+    { inputs: ['dumpling_raw'], action: 'boil', result: 'dumplings_chinese' }, // Результат тот же, но процесс жуткий
+
+    // Стейк с кровью (Хоррор: Кусок одежды)
+    // (Крафт такой же, но описание ингредиентов другое)
+    { inputs: ['steak_raw', 'oil'], action: 'mix', result: 'steak_oiled' },
+    { inputs: ['steak_oiled', 'spices'], action: 'mix', result: 'steak_spiced' },
+    { inputs: ['steak_spiced'], action: 'fry', result: 'steak' },
+
+    // Русские пельмени (Хоррор: ЗАЧЕРКНУТО фарш)
+    { inputs: ['kitten_meat', 'blood_chef'], action: 'mix', result: 'meat_mix' }, // Жуть
+    { inputs: ['meat_mix', 'onion_garlic', 'spices'], action: 'mix', result: 'filling_ru' },
+    { inputs: ['filling_ru', 'dough'], action: 'mix', result: 'dumpling_raw_ru' },
+    { inputs: ['dumpling_raw_ru'], action: 'boil', result: 'dumplings_russian' },
+
+    // Шаурма вокзальная
+    { inputs: ['kitten_meat'], action: 'bake', result: 'chicken_baked' }, // Типа курица
+    { inputs: ['cabbage_white', 'cucumber', 'tomato'], action: 'cut', result: 'shawarma_veg' },
+    { inputs: ['chicken_baked', 'shawarma_veg'], action: 'mix', result: 'shawarma_fill' },
+    { inputs: ['lavash', 'blood_chef'], action: 'mix', result: 'lavash_wet' }, // Кровь вместо соуса
+    { inputs: ['lavash_wet', 'shawarma_fill'], action: 'mix', result: 'shawarma_raw' },
+    { inputs: ['shawarma_raw'], action: 'fry', result: 'shawarma' }, // Результат "Шаурма", но крафт другой
+
+    // Торт из селедки
+    { inputs: ['herring'], action: 'cut', result: 'herring_cut' },
+    { inputs: ['biscuit', 'sweet_cream'], action: 'mix', result: 'cake_layer_1' },
+    { inputs: ['biscuit', 'carrot_korean'], action: 'mix', result: 'cake_layer_2' },
+    { inputs: ['cake_layer_1', 'cake_layer_2', 'herring_cut'], action: 'mix', result: 'herring_cake' }, // Финал
+
+    // Холодец Шаманка
+    { inputs: ['shaman', 'water'], action: 'boil', result: 'shaman_broth' },
+    { inputs: ['shaman_broth', 'gelatin'], action: 'mix', result: 'shaman_jelly' }
 ];
 
 // ==========================================
@@ -363,6 +427,77 @@ const RECIPE_PAGES = [
         <li>Вишня + Слив. масло + Сгущенка (Смешать) -> Крем.</li>
         <li>Корж + Крем (Смешать).</li>
     </ol>`,
+];
+
+const HORROR_BOOK = [
+    `<h3>Крыса по-царски</h3>
+    <p>Нафаршировать выпотрошенную крысу лимоном и зеленью. Смазать маслом. Запекать.</p>
+    <ol>
+        <li>Лимон+Зелень (Нарезать).</li>
+        <li>Нарезка+Крыса (Смешать).</li>
+        <li>Крыса+Масло (Смешать).</li>
+        <li>Запечь.</li>
+    </ol>`,
+
+    `<h3>Китайские пельмени</h3>
+    <p><i>Мясо кажется странным... С легким запахом парфюма.</i></p>
+    <ol>
+        <li>Вода+Мука (Смешать).</li>
+        <li>Мясо+Капуста (Нарезать).</li>
+        <li>Нарезка+Зелень (Смешать).</li>
+        <li>Фарш+Соус (Смешать).</li>
+        <li>Тесто+Начинка (Смешать).</li>
+        <li>Варить.</li>
+    </ol>`,
+
+    `<h3>Русские пельмени</h3>
+    <p><i>Из фарша торчат усы...</i></p>
+    <ol>
+        <li>Вода+Яйцо+Мука (Смешать).</li>
+        <li>Лук+Чеснок (Нарезать).</li>
+        <li>Котенок+Кровь (Смешать).</li>
+        <li>Фарш+Лук/Чеснок+Приправы (Смешать).</li>
+        <li>Тесто+Начинка (Смешать).</li>
+        <li>Варить.</li>
+    </ol>`,
+
+    `<h3>Шаурма вокзальная</h3>
+    <p><i>Жарить до звона сигнализации.</i></p>
+    <ol>
+        <li>Котенок (Запечь).</li>
+        <li>Капуста+Огурцы+Помидоры (Нарезать).</li>
+        <li>Мясо+Овощи (Смешать).</li>
+        <li>Лаваш+Кровь повара (Смешать).</li>
+        <li>Лаваш+Начинка (Смешать).</li>
+        <li>Жарить.</li>
+    </ol>`,
+
+    `<h3>Стейк с кровью</h3>
+    <p><i>Кусок одежды сочится кровью...</i></p>
+    <ol>
+        <li>Стейк + Масло (Смешать).</li>
+        <li>Стейк + Приправы (Смешать).</li>
+        <li>Жарить.</li>
+    </ol>`,
+
+    `<h3>Торт из селедки</h3>
+    <p><i>Смайлик кремом :)</i></p>
+    <ol>
+        <li>Селедка (Нарезать).</li>
+        <li>Корж+Крем (Смешать).</li>
+        <li>Корж+Морковь по-корейски (Смешать).</li>
+        <li>Слои+Селедка (Смешать).</li>
+    </ol>`,
+
+    `<h3>Холодец «Шаманка»</h3>
+    <p>Замочить шамана.</p>
+    <ol>
+        <li>Шаман+Вода (Варить).</li>
+        <li>Бульон+Желатин (Смешать).</li>
+    </ol>`,
+    
+    `<h3>Жареный снег</h3>
+    <p>Снег + Спички (Жарить).</p>`
 ];
 
 

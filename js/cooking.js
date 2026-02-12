@@ -14,7 +14,6 @@ class CookingSystem {
         
         const display = document.getElementById('current-order-display');
         if (display) {
-            // Если передан текст - показываем его, иначе дефолт
             display.innerText = dishName || "Что-то вкусное";
             display.style.fontStyle = 'normal';
             display.style.fontWeight = 'bold';
@@ -41,28 +40,26 @@ class CookingSystem {
 
         document.getElementById('trash-btn').onclick = () => this.resetTable();
 
-        // Внутри initButtons() в файле cooking.js
-
+        // КНОПКА "ПОДАТЬ" (С ЛОГИКОЙ ДВОЙНОГО ЗАКАЗА)
         document.getElementById('serve-dish-btn').onclick = () => {
-            // 1. Собираем все готовые блюда, которые лежат в слотах результатов
             const dishesOnTable = this.results.filter(item => item && item !== 'trash');
 
-            // 2. Логика для ДВОЙНОГО ЗАКАЗА (Пламенеющая и Незабудочка)
+            // 1. Двойной заказ (Комбо)
             if (this.targetOrder === 'sweet_combo_duo') {
                 const hasKid = dishesOnTable.includes('sweet_combo_kid');
                 const hasAdult = dishesOnTable.includes('sweet_combo_adult');
 
                 if (hasKid && hasAdult) {
-                    // Если на столе есть ОБА блюда - подаем "виртуальный" двойной заказ
                     if (window.game) window.game.finishCooking('sweet_combo_duo');
                     return;
                 }
             }
 
-            // 3. Логика для обычных одиночных заказов          
+            // 2. Обычный заказ
+            // Ищем точное совпадение
             let dishToServe = dishesOnTable.find(d => d === this.targetOrder);
             
-            // Если идеального совпадения нет, берем первое попавшееся (игрок ошибся)
+            // Если точного нет, берем первое попавшееся (ошибка)
             if (!dishToServe && dishesOnTable.length > 0) {
                 dishToServe = dishesOnTable[0];
             }
@@ -72,6 +69,7 @@ class CookingSystem {
             }
         };
 
+        // КНИГА РЕЦЕПТОВ
         document.getElementById('recipe-book-btn').onclick = () => {
             document.getElementById('recipe-modal').classList.remove('hidden');
             this.currentPage = 0; 
@@ -87,7 +85,6 @@ class CookingSystem {
         const item = this.results[resultIndex];
         if (!item || item === 'trash') return;
 
-        // Ищем свободный слот
         for (let i = 0; i < 3; i++) {
             if (!this.slots[i]) {
                 this.slots[i] = item;
@@ -99,24 +96,17 @@ class CookingSystem {
         alert("На столе нет места!");
     }
 
-    // --- В файле cooking.js ---
-
-    // 1. УМНЫЙ ФИЛЬТР ИНГРЕДИЕНТОВ
+    // ОТРИСОВКА ИНГРЕДИЕНТОВ (С УЧЕТОМ РЕЖИМА)
     renderPantry() {
         const grid = document.getElementById('pantry-grid');
         if (!grid) return;
         grid.innerHTML = ''; 
 
-        if (typeof BASE_INGREDIENTS !== 'undefined') {
-            BASE_INGREDIENTS.forEach(key => {
-                // ПРОВЕРКА НА ХОРРОР
-                const isHorrorItem = ['rat', 'shaman',  'herring'].includes(key);
-                
-                // Если сейчас НЕ хоррор режим, а предмет страшный - пропускаем его
-                if (!window.game.isHorrorMode && isHorrorItem) {
-                    return; 
-                }
+        // Выбираем правильный список в зависимости от режима
+        const currentList = window.game.isHorrorMode ? HORROR_INGREDIENTS : BASE_INGREDIENTS;
 
+        if (currentList) {
+            currentList.forEach(key => {
                 const el = document.createElement('div');
                 el.className = 'item-card';
                 el.innerText = ITEMS[key] || key;
@@ -126,38 +116,37 @@ class CookingSystem {
         }
     }
 
-    // 2. УМНАЯ КНИГА РЕЦЕПТОВ
+    // ОТРИСОВКА КНИГИ (С УЧЕТОМ РЕЖИМА)
     renderBookPage() {
         const bookArea = document.getElementById('book-text-area');
         
-        // Фильтруем страницы: показываем хоррор-рецепты (последние 3) ТОЛЬКО в хоррор-режиме
-        // Обычных рецептов 9 штук (0-8), Хоррор (9-11)
-        
-        let content = "";
-        
-        // Если это обычная страница
-        if (this.currentPage < 9) {
-            content = RECIPE_PAGES[this.currentPage];
-        } 
-        // Если это страница с хоррором
-        else {
-            if (window.game.isHorrorMode) {
-                content = RECIPE_PAGES[this.currentPage];
-            } else {
-                // Если мы долистали до конца в обычном режиме - показываем пустую страницу или "Конец"
-                content = "<h3>Заметки</h3><p>Здесь пока пусто...</p>";
-            }
-        }
+        // Выбираем правильную книгу
+        const currentBook = window.game.isHorrorMode ? HORROR_BOOK : RECIPE_PAGES;
+
+        // Защита от выхода за границы
+        if (this.currentPage >= currentBook.length) this.currentPage = 0;
+        if (this.currentPage < 0) this.currentPage = currentBook.length - 1;
+
+        const pageContent = currentBook[this.currentPage];
         
         bookArea.innerHTML = `
-            <div class="book-page-text">${content}</div>
+            <div class="book-page-text">${pageContent}</div>
             <div class="book-nav">
                 <button class="book-btn" id="prev-page-btn">←</button>
-                <span>${this.currentPage + 1} / ${RECIPE_PAGES.length}</span>
+                <span>${this.currentPage + 1} / ${currentBook.length}</span>
                 <button class="book-btn" id="next-page-btn">→</button>
             </div>
         `;
-        
+
+        // Кнопки навигации
+        document.getElementById('prev-page-btn').onclick = () => {
+            this.currentPage--;
+            this.renderBookPage();
+        };
+        document.getElementById('next-page-btn').onclick = () => {
+            this.currentPage++;
+            this.renderBookPage();
+        };
     }
 
     addToSlot(itemId) {
@@ -176,13 +165,13 @@ class CookingSystem {
     }
 
     updateTableUI() {
-        // Обновляем слоты ввода
+        // Слоты ввода
         for (let i = 0; i < 3; i++) {
             const el = document.getElementById(`slot-${i+1}`);
             if (el) el.innerText = this.slots[i] ? (ITEMS[this.slots[i]] || this.slots[i]) : "";
         }
 
-        // Обновляем слоты результата
+        // Слоты результата
         for (let i = 0; i < 3; i++) {
             const el = document.getElementById(`craft-result-${i+1}`);
             if (el) {
@@ -218,26 +207,23 @@ class CookingSystem {
 
         let foundRecipe = null;
         
-        // Поиск рецепта
         for (let r of CRAFTING_TABLE) {
             if (r.action !== actionType) continue;
             
             const rInputs = [...r.inputs].sort();
             const currentInputs = [...inputs].sort();
             
-            // Сравниваем массивы (JSON.stringify работает для простых массивов строк)
             if (JSON.stringify(rInputs) === JSON.stringify(currentInputs)) {
                 foundRecipe = r;
                 break;
             }
         }
 
-        // Очищаем слоты
         this.slots = [null, null, null];
         
         const resultItem = foundRecipe ? foundRecipe.result : 'trash';
 
-        // Кладем результат в первый свободный слот результатов
+        // Кладем результат в первый свободный слот
         let placed = false;
         for (let i = 0; i < 3; i++) {
             if (!this.results[i]) {
@@ -248,32 +234,10 @@ class CookingSystem {
         }
         
         if (!placed) {
-            // Если места нет, перезаписываем первый слот (или можно выдавать ошибку)
-            this.results[0] = resultItem; 
+            this.results[0] = resultItem; // Перезапись, если нет места
         }
 
         this.updateTableUI();
-    }
-
-    renderBookPage() {
-        // (Этот код не меняется, он просто берет текст из data.js)
-        const bookArea = document.getElementById('book-text-area');
-        const pageContent = RECIPE_PAGES[this.currentPage];
-        bookArea.innerHTML = `
-            <div class="book-page-text">${pageContent}</div>
-            <div class="book-nav">
-                <button class="book-btn" id="prev-page-btn">←</button>
-                <span>${this.currentPage + 1} / ${RECIPE_PAGES.length}</span>
-                <button class="book-btn" id="next-page-btn">→</button>
-            </div>
-        `;
-        // ... (обработчики кнопок книги как раньше) ...
-        const prevBtn = document.getElementById('prev-page-btn');
-        const nextBtn = document.getElementById('next-page-btn');
-        if (this.currentPage === 0) prevBtn.style.visibility = 'hidden';
-        if (this.currentPage === RECIPE_PAGES.length - 1) nextBtn.style.visibility = 'hidden';
-        prevBtn.onclick = () => { if (this.currentPage > 0) { this.currentPage--; this.renderBookPage(); }};
-        nextBtn.onclick = () => { if (this.currentPage < RECIPE_PAGES.length - 1) { this.currentPage++; this.renderBookPage(); }};
     }
 }
 

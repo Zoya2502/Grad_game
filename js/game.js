@@ -16,6 +16,7 @@ class Game {
         this.sawGlitch = false;
         this.isSans = false;
         
+        // Память для текста заказа
         this.lastOrderText = ""; 
     }
 
@@ -54,7 +55,7 @@ class Game {
         
         this.currentScene = scene;
 
-        // 1. СПРАЙТЫ
+        // --- 1. СПРАЙТЫ ---
         const charLeft = document.getElementById('char-left');
         const charRight = document.getElementById('char-right');
 
@@ -81,7 +82,7 @@ class Game {
         if (scene.speaker === "Жгучая Крапива") charLeft.classList.add('is-speaking');
         else if (scene.speaker && scene.speaker !== "Экранчик") charRight.classList.add('is-speaking');
 
-        // 2. ЭКРАНЧИК
+        // --- 2. ЭКРАНЧИК ---
         const monitor = document.getElementById('monitor-helper');
         monitor.classList.remove('screeny-center');
         monitor.classList.remove('sans-shake');
@@ -103,7 +104,7 @@ class Game {
             if (!this.screenyUnlocked) monitor.classList.add('hidden');
         }
 
-        // 3. ТЕКСТ И КНОПКИ
+        // --- 3. ТЕКСТ И КНОПКИ ---
         document.getElementById('dialogue-text').innerText = scene.text;
         document.getElementById('speaker-name').innerText = scene.speaker || "???";
         document.getElementById('speaker-name').style.display = scene.speaker ? 'block' : 'none';
@@ -177,10 +178,8 @@ class Game {
         
         if (this.isHorrorMode) {
             this.loadScene('morning_horror');
-        } else if (this.day === 2) {
+        } else if (this.day === 2 || this.day === 3) {
             this.loadScene('morning_d2_start');
-        } else if (this.day === 3) {
-            this.loadScene('morning_d3_start');
         } else {
             this.startKitchenDay();
         }
@@ -245,128 +244,110 @@ class Game {
         }
     }
 
-    // --- ФИНАЛ ГОТОВКИ (ПОЛНАЯ ВЕРСИЯ) ---
+    // --- ФИНАЛ ГОТОВКИ ---
     finishCooking(resultItem) {
         const isCorrect = (resultItem === this.currentOrder);
         
-        // 0. ПАСХАЛКА: ЖАРЕНЫЙ СНЕГ (Только в начале игры)
+        // 0. ПАСХАЛКА
         if (this.day <= 2 && resultItem === 'fried_snow') {
             document.getElementById('kitchen-screen').classList.add('hidden');
             document.getElementById('vn-screen').classList.remove('hidden');
-            
-            // Активируем режим Санса навсегда
             this.isSans = true; 
-            
             const monitor = document.getElementById('monitor-helper');
             monitor.classList.remove('kitchen-mode'); 
-            
             this.loadScene('sans_event'); 
             return;
         }
 
-        // 1. КОНТРОЛЬ ЭКРАНЧИКА (Дни 1-2)
+        // 1. КОНТРОЛЬ (Дни 1-2)
         if (this.day <= 2 && !isCorrect) {
             document.getElementById('kitchen-screen').classList.add('hidden');
             document.getElementById('vn-screen').classList.remove('hidden');
-            
-            // Возвращаем экранчик из угла
             document.getElementById('monitor-helper').classList.remove('kitchen-mode');
-            
             this.loadScene('block_mistake'); 
             return;
         }
 
-        // 2. ХОРРОР ТРИГГЕР (Если ошиблись в обычном режиме после 2 дня)
-        if (this.day > 2 && !isCorrect && !this.isHorrorMode) {
-            this.triggerHorrorMode();
-            return;
-        }
-
-        // 3. УСПЕШНАЯ ПОДАЧА (ИЛИ ПРАВИЛЬНЫЙ ЗАКАЗ В ХОРРОРЕ)
+        // 3. УСПЕШНАЯ ПОДАЧА ИЛИ ОШИБКА (День 3+)
         document.getElementById('kitchen-screen').classList.add('hidden');
         document.getElementById('vn-screen').classList.remove('hidden');
         
         const monitor = document.getElementById('monitor-helper');
         monitor.classList.remove('kitchen-mode'); 
 
-        // Смена кнопок (убираем "Готовить", показываем стрелку)
         const nextBtn = document.getElementById('next-btn');
         const cookBtn = document.getElementById('cook-btn');
         cookBtn.classList.add('hidden');
         nextBtn.classList.remove('hidden');
 
+        // РЕАКЦИИ
         let reactionText = "";
         let speakerName = this.currentGuestData.name;
 
         if (this.isHorrorMode) {
-            // === РЕАКЦИИ В ХОРРОР РЕЖИМЕ ===
+            // === ХОРРОР РЕЖИМ ===
             if (isCorrect) {
-                // Если заказ верный -> РАНДОМНАЯ КРИПИ ФРАЗА из списка
                 const randomPhrase = HORROR_PHRASES[Math.floor(Math.random() * HORROR_PHRASES.length)];
                 reactionText = randomPhrase.text;
-                speakerName = randomPhrase.speaker; // "???"
+                speakerName = randomPhrase.speaker;
             } else {
-                // Если заказ неверный в хорроре -> (здесь можно добавить Game Over)
                 reactionText = "Гость молча смотрит на тарелку. Его лицо искажается...";
                 speakerName = "???";
             }
         } else {
-            // === РЕАКЦИИ В ОБЫЧНОМ РЕЖИМЕ ===
+            // === ОБЫЧНЫЙ РЕЖИМ ===
             const guestId = this.currentGuestData.id;
             const reactionData = GUEST_REACTIONS_DATA[guestId];
             
             if (isCorrect) {
                 this.karma++;
-                // Любимое или просто правильное?
                 reactionText = (resultItem === reactionData.fav_dish) ? reactionData.favorite : reactionData.correct;
             } else {
-                // Сюда мы попадем, только если логика триггера хоррора выше не сработала (страховка)
                 this.karma--;
                 reactionText = reactionData.wrong;
             }
         }
 
-        // ШАГ 1: Мысли Жгучей (Рандомная фраза)
+        // Мысли Жгучей
         const thought = KRAPIVA_THOUGHTS.serving[Math.floor(Math.random() * KRAPIVA_THOUGHTS.serving.length)];
         
         document.getElementById('speaker-name').innerText = "Жгучая Крапива";
         document.getElementById('dialogue-text').innerText = `(${thought})`;
         
-        // Подсветка Жгучей
         document.getElementById('char-left').classList.add('is-speaking');
         document.getElementById('char-right').classList.remove('is-speaking');
 
-        // ШАГ 2: Реакция Гостя (по клику на стрелку)
+        // Клик 1: Показываем реакцию
         nextBtn.onclick = () => {
             document.getElementById('speaker-name').innerText = speakerName;
             document.getElementById('dialogue-text').innerText = reactionText;
             
-            // Подсветка Гостя
             document.getElementById('char-left').classList.remove('is-speaking');
             document.getElementById('char-right').classList.add('is-speaking');
             
-            // ШАГ 3: Уход (следующий клик)
+            // Клик 2: Гость уходит ИЛИ запускается хоррор
             nextBtn.onclick = () => {
-                // Сброс поведения кнопки на стандартное
                 nextBtn.onclick = () => this.nextStep(); 
-                
-                // Убираем спрайт гостя
                 document.getElementById('char-right').classList.remove('visible');
-                
-                // Запускаем следующего гостя
                 this.currentGuestData = null;
-                this.nextGuest();
+
+                if (this.day > 2 && !isCorrect && !this.isHorrorMode) {
+                    this.triggerHorrorMode();
+                } else {
+                    this.nextGuest();
+                }
             };
         };
     }
 
     // --- КОНЕЦ ДНЯ ---
     endDay() {
-        this.day++;
         if (this.isHorrorMode) {
+            this.day++; 
             document.getElementById('vn-screen').classList.remove('hidden');
             this.loadScene('horror_end_day');
         } else {
+            this.day++;
             this.transitionToDay();
         }
     }
@@ -394,6 +375,7 @@ class Game {
     }
 }
 
+// Запуск
 const game = new Game();
 window.game = game;
 window.onload = () => game.init();
