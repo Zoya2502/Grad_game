@@ -108,68 +108,143 @@ body {
 .is-speaking { opacity: 1 !important; filter: brightness(1.1) !important; transform: scale(1.05) !important; z-index: 20 !important; }
 
 /* ИНТЕРФЕЙС */
+/* --- ИНТЕРФЕЙС И ДИАЛОГ (ИСПРАВЛЕНО: ТЕКСТ НА ВЕСЬ ЭКРАН) --- */
+
 #vn-ui {
-    /* Фиксируем высоту интерфейса, но даем ей сжиматься при необходимости */
-    height: 35%; 
+    /* Фиксируем высоту интерфейса (около 35% экрана) */
+    height: 35vh; 
     min-height: 250px;
-    position: relative; z-index: 30; flex-shrink: 0;
-    background: #fff; border-top: 5px solid var(--pink-ui);
-    padding: 0; box-sizing: border-box; display: flex; flex-direction: column;
+    position: relative; 
+    z-index: 30; 
+    flex-shrink: 0;
+    background: #fff; 
+    border-top: 5px solid var(--pink-ui);
+    padding: 0; 
+    box-sizing: border-box; 
+    display: flex; 
+    flex-direction: column;
 }
 
 #dialogue-box {
-    width: 100%; height: 100%; display: flex; flex-direction: column; 
+    width: 100%; 
+    height: 100%; 
+    display: flex; 
+    flex-direction: column; 
     position: relative;
-    padding: 40px 20px 10px 20px; 
+    /* Отступы: сверху для имени, снизу для стрелки */
+    padding: 40px 30px 10px 30px; 
     box-sizing: border-box;
 }
 
 #speaker-name {
-    position: absolute; top: -25px; left: 20px;
-    background: var(--pink-dark); color: white;
-    font-family: 'Fredoka One'; font-size: 1.4rem; padding: 8px 30px;
-    border-radius: 20px; border: 3px solid white; box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+    position: absolute; 
+    top: -30px; /* Висит на рамке */
+    left: 40px;
+    background: var(--pink-dark); 
+    color: white;
+    font-family: 'Fredoka One'; 
+    font-size: 1.6rem; 
+    padding: 10px 40px;
+    border-radius: 20px; 
+    border: 3px solid white; 
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
     z-index: 35;
 }
 
 #dialogue-text {
-    font-size: clamp(1.1rem, 4vw, 1.4rem); color: var(--text-color); line-height: 1.4;
-    flex-grow: 0; 
-    max-height: 40%; /* Текст не занимает всё место, оставляя место кнопкам */
-    overflow-y: auto; margin-bottom: 10px;
+    font-size: clamp(1.1rem, 2.5vw, 1.4rem); /* Адаптивный шрифт */
+    color: var(--text-color); 
+    line-height: 1.5;
+    
+    /* САМОЕ ГЛАВНОЕ: Текст занимает всё доступное место */
+    flex-grow: 1; 
+    height: auto; 
+    max-height: none; /* Убираем ограничение! */
+    
+    overflow-y: auto; /* Скролл, если текста ОЧЕНЬ много */
+    margin-bottom: 10px;
+    
+    /* Красивый скроллбар */
+    scrollbar-width: thin;
+    scrollbar-color: var(--pink-ui) transparent;
 }
 
-/* === СКРОЛЛ КНОПОК === */
+/* === БЛОК КНОПОК (КАРУСЕЛЬ) === */
 #choices-container {
-    display: flex; flex-direction: column; gap: 8px; align-items: center;
-    margin-top: auto; 
-    width: 100%;
-    /* ВАЖНО: Добавляем скролл для кнопок */
-    flex-grow: 1;
+    display: flex; 
+    flex-direction: column; 
+    gap: 8px; 
+    align-items: center;
+    width: 100%; 
+    
+    /* Не даем кнопкам сжимать текст слишком сильно */
+    flex-shrink: 0; 
+    
+    /* Если кнопок много - появляется скролл внутри этого блока */
+    max-height: 140px; 
     overflow-y: auto; 
-    padding-bottom: 50px; /* Чтобы не перекрывалось кнопкой Далее */
-    max-height: 140px; /* Ограничиваем высоту */
+    
+    /* Отступ, чтобы не наезжать на стрелку "Далее" */
+    padding-bottom: 5px;
+    margin-top: 10px;
+    
+    /* Скрываем, если пустой */
+    min-height: 0; 
 }
 
-/* Скроллбар для кнопок */
-#choices-container::-webkit-scrollbar { width: 5px; }
-#choices-container::-webkit-scrollbar-thumb { background: var(--pink-ui); border-radius: 5px; }
+/* Скрываем контейнер полностью, если в нем нет кнопок (JS это делает, но CSS подстрахует) */
+#choices-container:empty {
+    display: none;
+    margin: 0;
+    height: 0;
+}
+
+/* Стилизация скролла для кнопок */
+#choices-container::-webkit-scrollbar { width: 6px; }
+#choices-container::-webkit-scrollbar-thumb { background: var(--pink-ui); border-radius: 10px; }
+#choices-container::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
 
 .choice-btn {
-    width: 90%; flex-shrink: 0; /* Чтобы не сжимались */
-    padding: 12px; font-size: 1rem; border: 2px solid var(--pink-ui);
-    background: white; border-radius: 30px; cursor: pointer; font-weight: bold; color: var(--text-color);
+    width: 90%; 
+    flex-shrink: 0; /* Кнопки не сплющиваются */
+    padding: 12px; 
+    font-size: 1rem; 
+    border: 2px solid var(--pink-ui);
+    background: white; 
+    border-radius: 30px; 
+    cursor: pointer; 
+    font-weight: bold; 
+    color: var(--text-color);
     transition: 0.2s;
 }
-.choice-btn:hover { background: var(--pink-ui); color: white; }
 
+.choice-btn:hover { background: var(--pink-ui); color: white; transform: scale(1.02); }
+
+/* КНОПКИ УПРАВЛЕНИЯ (СТРЕЛКА) */
 #vn-controls {
-    position: absolute; bottom: 10px; right: 20px;
-    display: flex; gap: 15px; align-items: center; z-index: 40;
+    /* Абсолютное позиционирование поверх всего в правом нижнем углу */
+    position: absolute; 
+    bottom: 15px; 
+    right: 25px;
+    display: flex; 
+    gap: 15px; 
+    align-items: center; 
+    z-index: 40;
+    /* Полупрозрачный фон под стрелкой, чтобы текст не мешал, если наедет */
+    background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
 }
-#next-btn { background: none; border: none; font-family: 'Fredoka One'; font-size: 3rem; color: var(--pink-accent); cursor: pointer; }
-#cook-btn { background: var(--pink-dark); color: white; border: none; border-radius: 30px; padding: 10px 20px; font-family: 'Fredoka One'; font-size: 1.2rem; cursor: pointer; animation: pulse 2s infinite; }
 
+#next-btn {
+    background: none; border: none; font-family: 'Fredoka One'; font-size: 3rem;
+    color: var(--pink-accent); cursor: pointer; transition: transform 0.2s;
+}
+#next-btn:hover { transform: translateX(5px); }
+
+#cook-btn {
+    background: var(--pink-dark); color: white; border: none; border-radius: 30px;
+    padding: 10px 20px; font-family: 'Fredoka One'; font-size: 1.2rem;
+    cursor: pointer; animation: pulse 2s infinite;
+}
 /* ==========================================
    5. КУХНЯ (АДАПТИВНАЯ)
    ========================================== */
