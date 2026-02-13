@@ -16,7 +16,6 @@ class Game {
         this.sawGlitch = false;
         this.isSans = false;
         
-        // Память для текста заказа
         this.lastOrderText = ""; 
     }
 
@@ -47,6 +46,7 @@ class Game {
             this.startKitchenDay(); return;
         }
         if (sceneId === 'START_HORROR_DAY') {
+            // Начало нового дня в хорроре (переход к гостям)
             this.transitionToDay(); return;
         }
 
@@ -55,7 +55,7 @@ class Game {
         
         this.currentScene = scene;
 
-        // --- 1. СПРАЙТЫ ---
+        // 1. СПРАЙТЫ
         const charLeft = document.getElementById('char-left');
         const charRight = document.getElementById('char-right');
 
@@ -82,11 +82,14 @@ class Game {
         if (scene.speaker === "Жгучая Крапива") charLeft.classList.add('is-speaking');
         else if (scene.speaker && scene.speaker !== "Экранчик") charRight.classList.add('is-speaking');
 
-        // --- 2. ЭКРАНЧИК ---
+        // 2. ЭКРАНЧИК
         const monitor = document.getElementById('monitor-helper');
-        monitor.classList.remove('screeny-center');
-        monitor.classList.remove('sans-shake');
         
+        // СБРОС ВСЕХ ПОЗИЦИЙ
+        monitor.classList.remove('screeny-center');
+        monitor.classList.remove('kitchen-mode'); // Важный фикс: убираем режим кухни
+        monitor.classList.remove('sans-shake');
+
         if (this.isSans) {
             monitor.classList.add('sans-visual');
         } else {
@@ -104,7 +107,7 @@ class Game {
             if (!this.screenyUnlocked) monitor.classList.add('hidden');
         }
 
-        // --- 3. ТЕКСТ И КНОПКИ ---
+        // 3. ТЕКСТ И КНОПКИ
         document.getElementById('dialogue-text').innerText = scene.text;
         document.getElementById('speaker-name').innerText = scene.speaker || "???";
         document.getElementById('speaker-name').style.display = scene.speaker ? 'block' : 'none';
@@ -124,7 +127,9 @@ class Game {
         } 
         else if (scene.choices) {
             scene.choices.forEach(choice => {
+                // Если есть условие (glitch_seen), проверяем его
                 if (choice.condition === 'glitch_seen' && !this.sawGlitch) return;
+                
                 const btn = document.createElement('button');
                 btn.className = 'choice-btn';
                 btn.innerText = choice.text;
@@ -159,7 +164,12 @@ class Game {
             setTimeout(() => {
                 textEl.innerText = ""; 
                 
-                if (this.day > 1) { 
+                // В Хорроре утро начинается с молчания
+                if (this.isHorrorMode) {
+                     this.startScreenyMorning();
+                } 
+                // В обычном режиме диалог только во 2 и 3 день
+                else if (this.day === 2 || this.day === 3) {
                     this.startScreenyMorning();
                 } else {
                     this.startKitchenDay();
@@ -268,7 +278,7 @@ class Game {
             return;
         }
 
-        // 3. УСПЕШНАЯ ПОДАЧА ИЛИ ОШИБКА (День 3+)
+        // 3. УСПЕШНАЯ ПОДАЧА (ИЛИ ОШИБКА В 3+ ДЕНЬ, КОТОРАЯ ПРИВЕДЕТ К ХОРРОРУ)
         document.getElementById('kitchen-screen').classList.add('hidden');
         document.getElementById('vn-screen').classList.remove('hidden');
         
@@ -285,7 +295,7 @@ class Game {
         let speakerName = this.currentGuestData.name;
 
         if (this.isHorrorMode) {
-            // === ХОРРОР РЕЖИМ ===
+            // В Хорроре реакция другая
             if (isCorrect) {
                 const randomPhrase = HORROR_PHRASES[Math.floor(Math.random() * HORROR_PHRASES.length)];
                 reactionText = randomPhrase.text;
@@ -295,10 +305,9 @@ class Game {
                 speakerName = "???";
             }
         } else {
-            // === ОБЫЧНЫЙ РЕЖИМ ===
+            // В обычном режиме
             const guestId = this.currentGuestData.id;
             const reactionData = GUEST_REACTIONS_DATA[guestId];
-            
             if (isCorrect) {
                 this.karma++;
                 reactionText = (resultItem === reactionData.fav_dish) ? reactionData.favorite : reactionData.correct;
@@ -310,10 +319,8 @@ class Game {
 
         // Мысли Жгучей
         const thought = KRAPIVA_THOUGHTS.serving[Math.floor(Math.random() * KRAPIVA_THOUGHTS.serving.length)];
-        
         document.getElementById('speaker-name').innerText = "Жгучая Крапива";
         document.getElementById('dialogue-text').innerText = `(${thought})`;
-        
         document.getElementById('char-left').classList.add('is-speaking');
         document.getElementById('char-right').classList.remove('is-speaking');
 
@@ -321,7 +328,6 @@ class Game {
         nextBtn.onclick = () => {
             document.getElementById('speaker-name').innerText = speakerName;
             document.getElementById('dialogue-text').innerText = reactionText;
-            
             document.getElementById('char-left').classList.remove('is-speaking');
             document.getElementById('char-right').classList.add('is-speaking');
             
@@ -331,7 +337,8 @@ class Game {
                 document.getElementById('char-right').classList.remove('visible');
                 this.currentGuestData = null;
 
-                if (this.day > 2 && !isCorrect && !this.isHorrorMode) {
+                // ЕДИНСТВЕННОЕ МЕСТО, ГДЕ ЗАПУСКАЕТСЯ ХОРРОР
+                if (!this.isHorrorMode && this.day > 2 && !isCorrect) {
                     this.triggerHorrorMode();
                 } else {
                     this.nextGuest();
@@ -344,6 +351,8 @@ class Game {
     endDay() {
         if (this.isHorrorMode) {
             this.day++; 
+            // В хорроре в конце дня - диалог с вопросами
+            document.getElementById('kitchen-screen').classList.add('hidden');
             document.getElementById('vn-screen').classList.remove('hidden');
             this.loadScene('horror_end_day');
         } else {
@@ -352,7 +361,7 @@ class Game {
         }
     }
 
-    // --- ХОРРОР-ТРИГГЕР ---
+    // --- ХОРРОР-ТРИГГЕР (ПЕРЕЗАПУСК ДНЯ В РЕЖИМЕ ХОРРОР) ---
     triggerHorrorMode() {
         console.log("!!! HORROR MODE ACTIVATED !!!");
         this.isHorrorMode = true;
@@ -369,7 +378,10 @@ class Game {
         setTimeout(() => {
             textEl.innerText = "ЧТО-ТО ПОШЛО НЕ ТАК";
             setTimeout(() => {
-                this.endDay(); // Завершаем день
+                textEl.innerText = "";
+                // ЗАПУСКАЕМ СЛЕДУЮЩИЙ ДЕНЬ УЖЕ В ХОРРОРЕ
+                // (Это сбросит текущую смену и начнет новую с хоррор-гостями)
+                this.transitionToDay(); 
             }, 3000);
         }, 1000);
     }

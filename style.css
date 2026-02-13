@@ -351,3 +351,27 @@ body.horror-mode #monitor-helper.kitchen-mode {
     background-image: url('assets/horror_telek.png'); /* Имя файла с хоррор-версией */
     filter: none; /* Убираем синий фильтр Санса, если он был */
 }
+
+/* В конец файла style.css */
+
+body.horror-mode .choice-btn {
+    background: #222;
+    color: #fff;
+    border: 2px solid #500;
+    font-family: 'Courier New';
+    text-shadow: 1px 1px 0 #f00;
+}
+body.horror-mode .choice-btn:hover {
+    background: #500;
+    color: #000;
+}
+
+body.horror-mode #next-btn, body.horror-mode #cook-btn {
+    color: #f00;
+    text-shadow: 2px 2px 0 #500;
+}
+
+/* Также убедимся, что Экранчик в хорроре по центру правильный */
+body.horror-mode #monitor-helper {
+    filter: none; /* Сбрасываем фильтры, чтобы картинка хоррора была видна */
+}
