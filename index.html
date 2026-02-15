@@ -16,7 +16,17 @@
             <div id="glitch-overlay" class="hidden">
                 <div id="transition-text"></div>
             </div>
+            <!-- Оверлей для финальной картинки (Арт концовки) -->
+            <div id="ending-art-layer" class="hidden"></div>
+            <!-- Оверлей для белой вспышки -->
+            <div id="flash-overlay" class="hidden"></div>
+            <!-- Оверлей для скримера (Плохая концовка) -->
+            <div id="jumpscare-layer" class="hidden">
+                <img src="assets/jumpscare_face.png" alt="SMILE">
+            </div>
 
+            <!-- Аудио для скримера -->
+            <audio id="sfx-scream" src="assets/scream.mp3"></audio>
             <section id="menu-screen">
                 <div class="bubbles"><span></span></div>
                 <h1 class="title">Dreamside Cafe</h1>
@@ -25,7 +35,7 @@
             </section>
 
             <!-- ОБНОВЛЕННАЯ СЕКЦИЯ НОВЕЛЛЫ -->
-            <section id="vn-screen" class="hidden">
+            <section id="vn-screen" class="hidden normal-bg"> <!-- Добавил класс normal-bg -->
                 <!-- Верхняя часть: СЦЕНА -->
                 <div id="vn-stage">
                     <div id="char-left"></div>
@@ -108,8 +118,16 @@
         </div>
     </div>
 
-    <!-- Аудио -->
-    <audio id="bgm-megalovania" src="assets/megalovania.mp3"></audio>
+    <!-- Блок Аудио -->
+    <!-- Фоновая музыка -->
+    <audio id="bgm-normal" src="assets/bgm_normal.mp3" loop></audio>
+    <audio id="bgm-horror" src="assets/bgm_horror.mp3" loop></audio>
+    <audio id="bgm-ending-good" src="assets/bgm_good.mp3" loop></audio>
+    <audio id="bgm-ending-bad" src="assets/bgm_bad.mp3" loop></audio>
+    
+    <!-- Спецэффекты и ивенты -->
+    <audio id="bgm-megalovania" src="assets/megalovania.ogg"></audio> <!-- Убрал loop, если трек короткий, или добавь если надо -->
+    <audio id="sfx-scream" src="assets/scream.ogg"></audio>
 
     <script src="js/data.js"></script>
     <script src="js/cooking.js"></script>

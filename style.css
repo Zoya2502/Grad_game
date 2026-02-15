@@ -63,7 +63,6 @@ body {
 }
 @keyframes observerFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
-.sans-visual { filter: hue-rotate(200deg) brightness(1.3) drop-shadow(0 0 15px cyan) !important; }
 .sans-shake { animation: sansShake 0.1s infinite !important; }
 @keyframes sansShake { 0% { transform: translate(-50%, -50%) scale(1.2) rotate(0deg); } 25% { transform: translate(-51%, -49%) scale(1.2) rotate(-2deg); } 75% { transform: translate(-50%, -50%) scale(1.2) rotate(0deg); } }
 
@@ -111,11 +110,14 @@ body {
 /* --- ИНТЕРФЕЙС И ДИАЛОГ (ИСПРАВЛЕНО: ТЕКСТ НА ВЕСЬ ЭКРАН) --- */
 
 #vn-ui {
-    /* Фиксируем высоту интерфейса (около 35% экрана) */
+    /* Фиксируем высоту интерфейса */
     height: 35vh; 
     min-height: 250px;
     position: relative; 
-    z-index: 30; 
+    
+    /* ИЗМЕНЕНИЕ ЗДЕСЬ: Поднимаем интерфейс над всеми слоями (арты, монитор, эффекты) */
+    z-index: 150; 
+    
     flex-shrink: 0;
     background: #fff; 
     border-top: 5px solid var(--pink-ui);
@@ -340,30 +342,85 @@ body {
 }
 .book-nav { display: flex; justify-content: space-between; margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 10px; }
 
-/* ХОРРОР */
-body.horror-mode #game-container { filter: sepia(0.5) contrast(1.2) brightness(0.7); border-color: #4a0000; }
-body.horror-mode #vn-ui { background: #111; border-color: #800000; }
-body.horror-mode #dialogue-text { color: red; font-family: 'Courier New'; text-shadow: 1px 0 red; }
+/* ==========================================
+   6. ФОНЫ И ХОРРОР СТИЛИ
+   ========================================== */
 
-/* В конец файла style.css */
-body.horror-mode #monitor-helper,
-body.horror-mode #monitor-helper.kitchen-mode {
-    background-image: url('assets/horror_telek.png'); /* Имя файла с хоррор-версией */
-    filter: none; /* Убираем синий фильтр Санса, если он был */
+#vn-screen {
+    /* Мы используем linear-gradient, чтобы наложить белый полупрозрачный слой (0.7 = 70% непрозрачности) поверх картинки */
+    background: linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4)), 
+                url('assets/bg_kitchen_normal.png') no-repeat center center;
+    
+    background-size: cover;
+    /* Остальные свойства оставь как были (position, z-index и т.д.) */
+    height: 100%; 
+    width: 100%; 
+    position: relative; 
+    display: flex; 
+    flex-direction: column; 
 }
 
-/* В конец файла style.css */
+/* ХОРРОР МОД */
+body.horror-mode #game-container {
+    filter: sepia(0.3) contrast(1.1) brightness(0.8);
+    border-color: #520000; /* Темно-красная рамка */
+}
 
+/* ФОН ХОРРОРА */
+body.horror-mode #vn-screen {
+    /* Здесь мы накладываем ЧЕРНЫЙ (0,0,0) полупрозрачный слой, чтобы кухня была мрачной */
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+                url('assets/bg_kitchen_horror.png') no-repeat center center;
+    background-size: cover;
+    background-color: #1a0505;
+}
+
+/* ИНТЕРФЕЙС ХОРРОРА */
+body.horror-mode #vn-ui {
+    background: #0f0505; /* Почти черный фон */
+    border-top: 5px solid #800000; /* Кровавая граница */
+}
+
+/* ИМЯ ПЕРСОНАЖА (ИСПРАВЛЕНИЕ РОЗОВОГО) */
+body.horror-mode #speaker-name {
+    background: #2a0000; /* Темно-бордовый фон */
+    color: #ff0000;      /* Красный текст */
+    border: 3px solid #ff0000; /* Ярко-красная рамка */
+    border-radius: 5px;  /* Острые углы вместо круглых */
+    font-family: 'Courier New', monospace; /* "Пишущая машинка" */
+    text-shadow: 0 0 5px #ff0000;
+    box-shadow: 0 5px 20px rgba(255, 0, 0, 0.2);
+    top: -20px; /* Чуть поправим позицию */
+}
+
+/* ТЕКСТ ДИАЛОГА */
+body.horror-mode #dialogue-text {
+    color: #ff4d4d;
+    font-family: 'Courier New', monospace;
+    text-shadow: 1px 0 #300;
+}
+
+/* КНОПКИ ВЫБОРА */
 body.horror-mode .choice-btn {
-    background: #222;
-    color: #fff;
+    background: #111;
+    color: #a00;
     border: 2px solid #500;
-    font-family: 'Courier New';
-    text-shadow: 1px 1px 0 #f00;
+    font-family: 'Courier New', monospace;
+    border-radius: 5px; /* Острые углы */
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 body.horror-mode .choice-btn:hover {
     background: #500;
     color: #000;
+    box-shadow: 0 0 10px #f00;
+}
+
+/* ЭКРАНЧИК */
+body.horror-mode #monitor-helper,
+body.horror-mode #monitor-helper.kitchen-mode {
+    background-image: url('assets/horror_telek.png'); /* Сделай файл horror_telek.png */
+    filter: none;
 }
 
 body.horror-mode #next-btn, body.horror-mode #cook-btn {
@@ -371,7 +428,197 @@ body.horror-mode #next-btn, body.horror-mode #cook-btn {
     text-shadow: 2px 2px 0 #500;
 }
 
-/* Также убедимся, что Экранчик в хорроре по центру правильный */
-body.horror-mode #monitor-helper {
-    filter: none; /* Сбрасываем фильтры, чтобы картинка хоррора была видна */
+/* ФИНАЛЬНЫЙ АРТ */
+#ending-art-layer {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 50; /* Поверх персонажей, но под интерфейсом диалога */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #000;
 }
+
+/* СКРИМЕР */
+#jumpscare-layer {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 9999; /* Поверх вообще всего */
+    background: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#jumpscare-layer img {
+    width: 80%;
+    height: auto;
+    animation: shake 0.1s infinite;
+}
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+/* --- СТИЛИ КОНЦОВОК --- */
+
+/* Прозрачный интерфейс (история продолжается на фоне картинки) */
+#vn-ui.transparent-ui {
+    background: rgba(0, 0, 0, 0.7) !important; /* Полупрозрачный черный */
+    border-top: 2px solid rgba(255, 255, 255, 0.3) !important;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+#vn-ui.transparent-ui #dialogue-text {
+    color: #fff !important;
+    text-shadow: 1px 1px 2px black;
+}
+#vn-ui.transparent-ui #speaker-name {
+    background: transparent !important;
+    border: none !important;
+    color: #ffb7d5 !important;
+    text-shadow: 1px 1px 5px black;
+    font-size: 1.4rem;
+    top: -40px;
+    left: 20px;
+    padding: 0;
+    box-shadow: none;
+}
+
+/* Финальная карточка */
+.ending-card-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    background: black;
+}
+.ending-card {
+    background: #1a1a1a;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    max-width: 80%;
+    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    margin-bottom: 20px;
+}
+.ending-card img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+    display: block;
+}
+.ending-text {
+    margin-top: 15px;
+    color: white;
+    font-family: 'Fredoka One', cursive;
+}
+.ending-text h2 {
+    font-size: 2rem;
+    margin: 0;
+    color: #ffd700; /* Золотой */
+}
+.ending-text p {
+    font-size: 1.2rem;
+    margin: 5px 0 0 0;
+    opacity: 0.8;
+}
+
+/* Рамки для карточек */
+.good-border { border: 4px solid #4CAF50; box-shadow: 0 0 20px #4CAF50; }
+.bad-border { border: 4px solid #F44336; box-shadow: 0 0 20px #F44336; }
+
+/* Анимация появления */
+.fade-in { animation: fadeIn 2s ease-in; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ВСПЫШКА */
+#flash-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: white;
+    z-index: 100; /* Поверх всего */
+    pointer-events: none; /* Чтобы можно было кликать сквозь вспышку */
+    opacity: 0;
+}
+
+.flash-anim {
+    animation: flashEffect 2s ease-out forwards;
+}
+
+@keyframes flashEffect {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* ЧЕРНЫЙ ЭКРАН (ТЕКСТ В ПУСТОТЕ) */
+/* ЧЕРНЫЙ ЭКРАН (ТЕКСТ В ПУСТОТЕ) */
+.black-void-ui {
+    background: transparent !important;
+    border: none !important;
+    color: #fff !important;
+    text-shadow: 0 0 10px rgba(255,255,255,0.8) !important;
+    
+    /* ПОЗИЦИОНИРОВАНИЕ */
+    position: fixed !important; /* Fixed, чтобы точно быть поверх всего */
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    
+    width: 80% !important;
+    text-align: center !important;
+    font-size: 1.8rem !important; 
+    font-family: 'Fredoka One', cursive !important;
+    
+    pointer-events: none; 
+    z-index: 9999 !important; /* Самый высокий приоритет */
+    
+    /* СБРОС СТАРЫХ СТИЛЕЙ */
+    height: auto !important;
+    bottom: auto !important;
+    min-height: 0 !important;
+    padding: 20px !important;
+}
+
+/* Скрываем имя, но оставляем текст */
+.black-void-ui #speaker-name {
+    display: none !important; 
+}
+
+.black-void-ui #dialogue-text {
+    color: white !important;
+    font-size: 1.8rem !important;
+    text-align: center !important;
+}
+
+/* ВАЖНО: Кнопка "Далее" должна быть видна и кликабельна */
+#vn-controls {
+    z-index: 10000 !important; /* Выше текста */
+}
+
+/* Скрываем кнопки и стрелку, если мы в режиме "Тьмы", 
+   чтобы они не мешали кликать по всему экрану для продолжения */
+.black-void-ui #vn-controls, 
+.black-void-ui #speaker-name {
+    display: none !important;
+}
+
+/* Важно: Стрелка должна быть кликабельной 
+#vn-controls {
+    z-index: 9999 !important; /* Поверх всего 
+}
+/* Скрываем имя в режиме пустоты, если оно не нужно, или стилизуем 
+.black-void-ui #speaker-name {
+    display: none !important; 
+}*/
