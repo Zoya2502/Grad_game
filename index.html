@@ -11,22 +11,26 @@
     <div id="game-wrapper"> 
         <div id="game-container">
             
+            <!-- СЛОЙ 1: ИГРА -->
             <div id="monitor-helper" class="hidden"></div>
-            <!-- Оверлей перехода -->
+            
+            <!-- СЛОЙ 2: ПЕРЕХОДЫ И ГЛИТЧИ -->
             <div id="glitch-overlay" class="hidden">
                 <div id="transition-text"></div>
             </div>
-            <!-- Оверлей для финальной картинки (Арт концовки) -->
+
+            <!-- СЛОЙ 3: КОНЦОВКИ (АРТ) -->
             <div id="ending-art-layer" class="hidden"></div>
-            <!-- Оверлей для белой вспышки -->
+
+            <!-- СЛОЙ 4: ВСПЫШКА -->
             <div id="flash-overlay" class="hidden"></div>
-            <!-- Оверлей для скримера (Плохая концовка) -->
+
+            <!-- СЛОЙ 5: СКРИМЕР -->
             <div id="jumpscare-layer" class="hidden">
                 <img src="assets/jumpscare_face.png" alt="SMILE">
             </div>
 
-            <!-- Аудио для скримера -->
-            <audio id="sfx-scream" src="assets/scream.mp3"></audio>
+            <!-- ЭКРАНЫ -->
             <section id="menu-screen">
                 <div class="bubbles"><span></span></div>
                 <h1 class="title">Dreamside Cafe</h1>
@@ -34,24 +38,16 @@
                 <button id="start-btn" class="btn-primary">Начать смену</button>
             </section>
 
-            <!-- ОБНОВЛЕННАЯ СЕКЦИЯ НОВЕЛЛЫ -->
-            <section id="vn-screen" class="hidden normal-bg"> <!-- Добавил класс normal-bg -->
-                <!-- Верхняя часть: СЦЕНА -->
+            <section id="vn-screen" class="hidden">
                 <div id="vn-stage">
                     <div id="char-left"></div>
                     <div id="char-right"></div>
                 </div>
-
-                <!-- Нижняя часть: ИНТЕРФЕЙС -->
                 <div id="vn-ui">
                     <div id="dialogue-box">
                         <div id="speaker-name">???</div>
                         <div id="dialogue-text">...</div>
-                        
-                        <!-- Кнопки выбора (в центре) -->
                         <div id="choices-container"></div>
-                        
-                        <!-- Кнопки управления (справа внизу) -->
                         <div id="vn-controls">
                             <button id="next-btn">➜</button>
                             <button id="cook-btn" class="hidden">Готовить 🍳</button>
@@ -80,30 +76,19 @@
                             <div class="slot" id="slot-3" onclick="cookingSystem.clearSlot(2)"></div>
                         </div>
                         <div class="actions-panel">
-                            <button class="action-btn" data-act="mix">Смешать / Взбить / Смазать</button>
+                            <button class="action-btn" data-act="mix">Смешать / Взбить</button>
                             <button class="action-btn" data-act="cut">Нарезать</button>
                             <button class="action-btn" data-act="boil">Варить</button>
                             <button class="action-btn" data-act="fry">Жарить</button>
                             <button class="action-btn" data-act="bake">Запечь</button>
                         </div>
-
                         <div class="result-area">
-                            <div class="result-box">
-                                <p>Смесь 1:</p>
-                                <div id="craft-result-1" class="slot result-slot" onclick="cookingSystem.moveResultToInput(0)"></div>
-                            </div>
-                            <div class="result-box">
-                                <p>Смесь 2:</p>
-                                <div id="craft-result-2" class="slot result-slot" onclick="cookingSystem.moveResultToInput(1)"></div>
-                            </div>
-                            <div class="result-box">
-                                <p>Смесь 3:</p>
-                                <div id="craft-result-3" class="slot result-slot" onclick="cookingSystem.moveResultToInput(2)"></div>
-                            </div>
+                            <div class="result-box"><p>1:</p><div id="craft-result-1" class="slot result-slot" onclick="cookingSystem.moveResultToInput(0)"></div></div>
+                            <div class="result-box"><p>2:</p><div id="craft-result-2" class="slot result-slot" onclick="cookingSystem.moveResultToInput(1)"></div></div>
+                            <div class="result-box"><p>3:</p><div id="craft-result-3" class="slot result-slot" onclick="cookingSystem.moveResultToInput(2)"></div></div>
                         </div>
-                        
                         <div class="decision-buttons">
-                            <button id="trash-btn" class="hidden">Очистить стол</button>
+                            <button id="trash-btn" class="hidden">Очистить</button>
                             <button id="serve-dish-btn" class="hidden">ПОДАТЬ ✨</button>
                         </div>
                     </div>
@@ -118,15 +103,12 @@
         </div>
     </div>
 
-    <!-- Блок Аудио -->
-    <!-- Фоновая музыка -->
-    <audio id="bgm-normal" src="assets/bgm_normal.mp3" loop></audio>
-    <audio id="bgm-horror" src="assets/bgm_horror.mp3" loop></audio>
-    <audio id="bgm-ending-good" src="assets/bgm_good.mp3" loop></audio>
-    <audio id="bgm-ending-bad" src="assets/bgm_bad.mp3" loop></audio>
-    
-    <!-- Спецэффекты и ивенты -->
-    <audio id="bgm-megalovania" src="assets/megalovania.ogg"></audio> <!-- Убрал loop, если трек короткий, или добавь если надо -->
+    <!-- АУДИО (Проверь названия файлов в папке assets!) -->
+    <audio id="bgm-normal" src="assets/bgm_normal.ogg" loop></audio>
+    <audio id="bgm-horror" src="assets/bgm_horror.ogg" loop></audio>
+    <audio id="bgm-ending-good" src="assets/bgm_good.ogg" loop></audio>
+    <audio id="bgm-ending-bad" src="assets/bgm_bad.ogg" loop></audio>
+    <audio id="bgm-megalovania" src="assets/megalovania.ogg"></audio>
     <audio id="sfx-scream" src="assets/scream.ogg"></audio>
 
     <script src="js/data.js"></script>

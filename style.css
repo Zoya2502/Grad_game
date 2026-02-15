@@ -6,38 +6,18 @@
     --pink-ui: #ffb7d5; --pink-dark: #e084a8;
     --pink-accent: #d68ca3; --text-color: #5e4b56;
 }
-body { 
-    margin: 0; 
-    font-family: 'Nunito', sans-serif; 
-    background-color: #1a1a1a; 
-    /* Убираем жесткую центровку для мобилок, чтобы скроллилось если надо */
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    min-height: 100vh;
-}
+body { margin: 0; font-family: 'Nunito', sans-serif; background-color: #1a1a1a; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
 .hidden { display: none !important; }
 
-/* КОНТЕЙНЕР ИГРЫ (ГИБКИЙ) */
 #game-wrapper { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
 #game-container { 
-    width: 100%; 
-    max-width: 1024px; /* Не больше компа */
-    height: 100dvh;    /* На мобилках занимает весь экран */
-    max-height: 768px; /* На компах не слишком высоко */
-    background: var(--bg-color); 
-    position: relative; 
-    border-radius: 20px; 
-    overflow: hidden; 
-    box-shadow: 0 0 50px rgba(0,0,0,0.5); 
-    border: 8px solid white; 
-    display: flex; 
-    flex-direction: column; 
+    width: 100%; max-width: 1024px; height: 100dvh; max-height: 768px; 
+    background: var(--bg-color); position: relative; border-radius: 20px; 
+    overflow: hidden; border: 8px solid white; display: flex; flex-direction: column; 
+    box-shadow: 0 0 50px rgba(0,0,0,0.5);
 }
 
-/* ==========================================
-   2. МЕНЮ
-   ========================================== */
+/* МЕНЮ */
 #menu-screen {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 200;
     display: flex; flex-direction: column; justify-content: center; align-items: center;
@@ -51,574 +31,306 @@ body {
 .btn-primary { font-family: 'Fredoka One'; font-size: clamp(1.5rem, 5vw, 2rem); padding: 15px 70px; color: var(--pink-dark); background-color: #fff; border: 3px solid white; border-radius: 50px; cursor: pointer; box-shadow: 0 8px 0 rgba(0,0,0,0.1); transition: 0.2s; }
 .btn-primary:active { transform: translateY(4px); }
 
-/* ==========================================
-   3. ГЛОБАЛЬНЫЕ ЭЛЕМЕНТЫ
-   ========================================== */
+/* ГЛОБАЛЬНЫЕ ЭЛЕМЕНТЫ */
 #monitor-helper {
-    position: absolute; top: 20px; right: 40px; 
-    width: 150px; height: 120px;
+    position: absolute; top: 20px; right: 40px; width: 150px; height: 120px;
     background-image: url('assets/normal_telek.png'); background-size: contain; background-repeat: no-repeat; background-position: center;
-    z-index: 100; pointer-events: none; transition: all 0.8s ease-in-out; 
-    animation: observerFloat 6s ease-in-out infinite;
+    z-index: 100; pointer-events: none; transition: all 0.8s ease-in-out; animation: observerFloat 6s ease-in-out infinite;
 }
 @keyframes observerFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-
-.sans-shake { animation: sansShake 0.1s infinite !important; }
-@keyframes sansShake { 0% { transform: translate(-50%, -50%) scale(1.2) rotate(0deg); } 25% { transform: translate(-51%, -49%) scale(1.2) rotate(-2deg); } 75% { transform: translate(-50%, -50%) scale(1.2) rotate(0deg); } }
-
-/* ЦЕНТРИРОВАНИЕ ЭКРАНЧИКА (АДАПТИВНОЕ) */
 .screeny-center {
     top: 40% !important; left: 50% !important; right: auto !important; bottom: auto !important;
     transform: translate(-50%, -50%) scale(1) !important;
-    width: clamp(250px, 80vw, 500px) !important; /* Гибкий размер */
-    height: clamp(200px, 60vw, 400px) !important;
+    width: clamp(250px, 80vw, 500px) !important; height: clamp(200px, 60vw, 400px) !important;
     z-index: 500 !important; animation: none !important; opacity: 1 !important;
 }
-.kitchen-mode {
-    top: auto !important; bottom: 10px !important; right: 10px !important; left: auto !important;
-    width: 80px !important; height: 60px !important; opacity: 0.8;
-}
+.kitchen-mode { top: auto !important; bottom: 10px !important; right: 10px !important; left: auto !important; width: 80px !important; height: 60px !important; opacity: 0.8; }
 #glitch-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 999; pointer-events: none; opacity: 0; transition: opacity 1s ease-in-out; display: flex; justify-content: center; align-items: center; }
 #transition-text { color: white; font-family: 'Fredoka One'; font-size: clamp(2rem, 8vw, 4rem); text-shadow: 0 0 20px var(--pink-dark); }
 
-/* ==========================================
-   4. НОВЕЛЛА (LAYOUT)
-   ========================================== */
+/* НОВЕЛЛА */
 #vn-screen { 
     height: 100%; width: 100%; position: relative; 
-    background: radial-gradient(circle, #fff5f8 0%, #e8dbe0 100%); 
-    z-index: 1; display: flex; flex-direction: column; 
+    /* Z-INDEX 60 ОЧЕНЬ ВАЖЕН, ЧТОБЫ БЫТЬ ВЫШЕ АРТА */
+    z-index: 60; 
+    background: linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4)), url('assets/bg_kitchen_normal.png') no-repeat center center;
+    background-size: cover; display: flex; flex-direction: column; 
 }
-
-#vn-stage {
-    flex: 1; position: relative; overflow: hidden;
-    display: flex; justify-content: center; align-items: flex-end;
-}
+#vn-stage { flex: 1; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: flex-end; transition: opacity 1s ease; }
 #char-left, #char-right {
-    position: absolute; bottom: -20px; 
-    width: clamp(300px, 50vw, 480px); /* Адаптивная ширина */
-    height: 90%;
+    position: absolute; bottom: -20px; width: clamp(300px, 50vw, 480px); height: 90%;
     background-repeat: no-repeat; background-position: bottom center; background-size: contain;
     transition: all 0.4s ease-in-out; opacity: 0; filter: brightness(0.8); transform: scale(0.95);
 }
 #char-left.visible, #char-right.visible { opacity: 1; }
-#char-left { left: 5%; z-index: 10; }
-#char-right { right: 5%; z-index: 15; }
+#char-left { left: 5%; z-index: 10; } #char-right { right: 5%; z-index: 15; }
 .is-speaking { opacity: 1 !important; filter: brightness(1.1) !important; transform: scale(1.05) !important; z-index: 20 !important; }
 
 /* ИНТЕРФЕЙС */
-/* --- ИНТЕРФЕЙС И ДИАЛОГ (ИСПРАВЛЕНО: ТЕКСТ НА ВЕСЬ ЭКРАН) --- */
-
 #vn-ui {
-    /* Фиксируем высоту интерфейса */
-    height: 35vh; 
-    min-height: 250px;
-    position: relative; 
-    
-    /* ИЗМЕНЕНИЕ ЗДЕСЬ: Поднимаем интерфейс над всеми слоями (арты, монитор, эффекты) */
-    z-index: 150; 
-    
-    flex-shrink: 0;
-    background: #fff; 
-    border-top: 5px solid var(--pink-ui);
-    padding: 0; 
-    box-sizing: border-box; 
-    display: flex; 
-    flex-direction: column;
+    height: 35vh; min-height: 250px; position: relative; z-index: 150; flex-shrink: 0;
+    background: #fff; border-top: 5px solid var(--pink-ui); padding: 0; box-sizing: border-box; display: flex; flex-direction: column;
 }
-
-#dialogue-box {
-    width: 100%; 
-    height: 100%; 
-    display: flex; 
-    flex-direction: column; 
-    position: relative;
-    /* Отступы: сверху для имени, снизу для стрелки */
-    padding: 40px 30px 10px 30px; 
-    box-sizing: border-box;
-}
-
+#dialogue-box { width: 100%; height: 100%; display: flex; flex-direction: column; position: relative; padding: 40px 30px 10px 30px; box-sizing: border-box; }
 #speaker-name {
-    position: absolute; 
-    top: -30px; /* Висит на рамке */
-    left: 40px;
-    background: var(--pink-dark); 
-    color: white;
-    font-family: 'Fredoka One'; 
-    font-size: 1.6rem; 
-    padding: 10px 40px;
-    border-radius: 20px; 
-    border: 3px solid white; 
-    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
-    z-index: 35;
+    position: absolute; top: -30px; left: 40px; background: var(--pink-dark); color: white;
+    font-family: 'Fredoka One'; font-size: 1.6rem; padding: 10px 40px; border-radius: 20px; border: 3px solid white; box-shadow: 0 5px 10px rgba(0,0,0,0.1); z-index: 35;
 }
-
 #dialogue-text {
-    font-size: clamp(1.1rem, 2.5vw, 1.4rem); /* Адаптивный шрифт */
-    color: var(--text-color); 
-    line-height: 1.5;
-    
-    /* САМОЕ ГЛАВНОЕ: Текст занимает всё доступное место */
-    flex-grow: 1; 
-    height: auto; 
-    max-height: none; /* Убираем ограничение! */
-    
-    overflow-y: auto; /* Скролл, если текста ОЧЕНЬ много */
-    margin-bottom: 10px;
-    
-    /* Красивый скроллбар */
-    scrollbar-width: thin;
-    scrollbar-color: var(--pink-ui) transparent;
+    font-size: clamp(1.1rem, 2.5vw, 1.4rem); color: var(--text-color); line-height: 1.5;
+    flex-grow: 1; height: auto; max-height: none; overflow-y: auto; margin-bottom: 10px;
+    scrollbar-width: thin; scrollbar-color: var(--pink-ui) transparent;
 }
-
-/* === БЛОК КНОПОК (КАРУСЕЛЬ) === */
 #choices-container {
-    display: flex; 
-    flex-direction: column; 
-    gap: 8px; 
-    align-items: center;
-    width: 100%; 
-    
-    /* Не даем кнопкам сжимать текст слишком сильно */
-    flex-shrink: 0; 
-    
-    /* Если кнопок много - появляется скролл внутри этого блока */
-    max-height: 140px; 
-    overflow-y: auto; 
-    
-    /* Отступ, чтобы не наезжать на стрелку "Далее" */
-    padding-bottom: 5px;
-    margin-top: 10px;
-    
-    /* Скрываем, если пустой */
-    min-height: 0; 
+    display: flex; flex-direction: column; gap: 8px; align-items: center; width: 100%; flex-shrink: 0; max-height: 140px; overflow-y: auto; padding-bottom: 5px; margin-top: 10px; min-height: 0; 
 }
-
-/* Скрываем контейнер полностью, если в нем нет кнопок (JS это делает, но CSS подстрахует) */
-#choices-container:empty {
-    display: none;
-    margin: 0;
-    height: 0;
-}
-
-/* Стилизация скролла для кнопок */
-#choices-container::-webkit-scrollbar { width: 6px; }
-#choices-container::-webkit-scrollbar-thumb { background: var(--pink-ui); border-radius: 10px; }
-#choices-container::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
-
+#choices-container:empty { display: none; margin: 0; height: 0; }
 .choice-btn {
-    width: 90%; 
-    flex-shrink: 0; /* Кнопки не сплющиваются */
-    padding: 12px; 
-    font-size: 1rem; 
-    border: 2px solid var(--pink-ui);
-    background: white; 
-    border-radius: 30px; 
-    cursor: pointer; 
-    font-weight: bold; 
-    color: var(--text-color);
-    transition: 0.2s;
+    width: 90%; flex-shrink: 0; padding: 12px; font-size: 1rem; border: 2px solid var(--pink-ui); background: white; border-radius: 30px; cursor: pointer; font-weight: bold; color: var(--text-color); transition: 0.2s;
 }
-
 .choice-btn:hover { background: var(--pink-ui); color: white; transform: scale(1.02); }
-
-/* КНОПКИ УПРАВЛЕНИЯ (СТРЕЛКА) */
 #vn-controls {
-    /* Абсолютное позиционирование поверх всего в правом нижнем углу */
-    position: absolute; 
-    bottom: 15px; 
-    right: 25px;
-    display: flex; 
-    gap: 15px; 
-    align-items: center; 
-    z-index: 40;
-    /* Полупрозрачный фон под стрелкой, чтобы текст не мешал, если наедет */
+    position: absolute; bottom: 15px; right: 25px; display: flex; gap: 15px; align-items: center; z-index: 40;
     background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
 }
-
-#next-btn {
-    background: none; border: none; font-family: 'Fredoka One'; font-size: 3rem;
-    color: var(--pink-accent); cursor: pointer; transition: transform 0.2s;
-}
+#next-btn { background: none; border: none; font-family: 'Fredoka One'; font-size: 3rem; color: var(--pink-accent); cursor: pointer; transition: transform 0.2s; }
 #next-btn:hover { transform: translateX(5px); }
+#cook-btn { background: var(--pink-dark); color: white; border: none; border-radius: 30px; padding: 10px 20px; font-family: 'Fredoka One'; font-size: 1.2rem; cursor: pointer; animation: pulse 2s infinite; }
 
-#cook-btn {
-    background: var(--pink-dark); color: white; border: none; border-radius: 30px;
-    padding: 10px 20px; font-family: 'Fredoka One'; font-size: 1.2rem;
-    cursor: pointer; animation: pulse 2s infinite;
-}
-/* ==========================================
-   5. КУХНЯ (АДАПТИВНАЯ)
-   ========================================== */
+/* КУХНЯ */
 #kitchen-screen { padding: 10px; height: 100%; display: flex; flex-direction: column; box-sizing: border-box; background: #fff0f5; z-index: 2; }
-.kitchen-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; height: auto; min-height: 60px; flex-shrink: 0; gap: 10px; }
+.kitchen-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; height: auto; min-height: 60px; flex-shrink: 0; gap: 10px; }
 .order-note { background: #fff; padding: 5px 10px; border: 2px solid var(--pink-dark); border-radius: 10px; color: var(--text-color); font-size: 0.9rem; font-style: italic; flex-grow: 1; min-height: 50px; max-height: 80px; box-sizing: border-box; overflow-y: auto; display: flex; align-items: center; justify-content: center; text-align: center; }
-#recipe-book-btn { background: #8b4513; color: #fff; border: 3px solid #5e2f0d; padding: 0 10px; height: 40px; margin-top: 5px; border-radius: 8px; cursor: pointer; font-family: 'Fredoka One'; font-size: 0.9rem; flex-shrink: 0; }
+#recipe-book-btn { background: #8b4513; color: #fff; border: 3px solid #5e2f0d; padding: 5px 10px; border-radius: 8px; cursor: pointer; font-family: 'Fredoka One'; font-size: 0.9rem; flex-shrink: 0; white-space: nowrap; }
 
-.work-area { 
-    display: flex; gap: 10px; flex-grow: 1; overflow: hidden; padding-bottom: 5px; 
-}
-
-/* МОБИЛЬНАЯ ВЕРСИЯ КУХНИ */
-@media (max-width: 768px) {
-    #game-container { border: none; border-radius: 0; max-height: none; height: 100vh; }
-    .work-area { flex-direction: column; } /* Вертикальное расположение */
-    
-    .pantry-container { 
-        flex: 0 0 120px !important; /* Узкая полоска сверху */
-        width: 100%; 
-        flex-direction: row !important; /* Ингредиенты в ряд */
-        overflow-x: auto; overflow-y: hidden;
-    }
-    #pantry-grid { 
-        display: flex !important; /* Горизонтальный список */
-        flex-wrap: nowrap !important;
-        height: 100%;
-    }
-    .item-card { min-width: 80px; height: 100%; }
-    
-    .cooking-table { width: 100%; flex: 1; }
-}
-
-/* ОБЫЧНАЯ ВЕРСИЯ */
+.work-area { display: flex; gap: 10px; flex-grow: 1; overflow: hidden; padding-bottom: 5px; }
 .pantry-container { flex: 0 0 30%; background: #fff; border: 4px solid var(--pink-ui); border-radius: 15px; padding: 10px; display: flex; flex-direction: column; overflow-y: auto; }
 #pantry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 5px; }
-.item-card { height: 60px; background: #fdfbfb; border: 2px solid var(--pink-accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 0.7rem; font-weight: 700; color: var(--text-color); cursor: pointer; padding: 2px; }
-.item-card:hover { background: var(--pink-ui); color: white; }
+.item-card { height: 60px; background: #fdfbfb; border: 2px solid var(--pink-accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 0.7rem; font-weight: 700; color: var(--text-color); cursor: pointer; padding: 2px; box-shadow: 0 2px 2px rgba(0,0,0,0.05); }
 
 .cooking-table { flex: 1; background: #fff; border: 4px solid var(--pink-ui); border-radius: 15px; padding: 10px; display: flex; flex-direction: column; align-items: center; overflow-y: auto; position: relative; }
-.cooking-table h3 { font-size: 1.1rem; margin: 5px 0; }
-.slots-area { display: flex; align-items: center; gap: 5px; margin-bottom: 10px; }
+.slots-area { display: flex; align-items: center; gap: 5px; margin-bottom: 15px; justify-content: center; width: 100%; }
 .slot { width: 60px; height: 60px; border: 3px dashed var(--pink-accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; text-align: center; font-weight: bold; cursor: pointer; padding: 2px; background: #fafafa; font-size: 0.65rem; word-wrap: break-word; }
 .plus-sign { font-size: 1.2rem; color: var(--pink-accent); }
-.actions-panel { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; width: 100%; margin-bottom: 10px; }
-.action-btn { flex: 1 1 80px; max-width: 120px; padding: 8px 2px; background: #fff; border: 2px solid var(--pink-accent); border-radius: 10px; color: var(--text-color); font-weight: 700; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+/* ПАНЕЛЬ КНОПОК ДЕЙСТВИЙ */
+.actions-panel { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; width: 100%; margin-bottom: 15px; }
+.action-btn { flex: 0 0 auto; width: 100px; padding: 10px 5px; background: #fff; border: 2px solid var(--pink-accent); border-radius: 20px; color: var(--text-color); font-weight: 700; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 0 var(--pink-ui); transition: transform 0.1s; }
+.action-btn:active { transform: translateY(2px); box-shadow: none; }
 
 .result-area { display: flex; justify-content: center; gap: 10px; margin-top: auto; width: 100%; }
-.result-box p { margin: 0 0 2px 0; font-size: 0.7rem; }
+.result-box { display: flex; flex-direction: column; align-items: center; }
+.result-box p { margin: 0 0 5px 0; font-size: 0.8rem; font-weight: bold; color: var(--pink-dark); }
 .result-slot { border-style: solid; border-color: #ffc107; background-color: #fffbe6; }
-.decision-buttons { margin-top: 10px; display: flex; gap: 10px; margin-bottom: 5px; }
-#serve-dish-btn, #trash-btn { padding: 8px 20px; border-radius: 30px; font-size: 1rem; }
 
-/* КНИГА */
+.decision-buttons { margin-top: 15px; display: flex; gap: 15px; margin-bottom: 5px; }
+#trash-btn { background: #e74c3c; color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; }
+#serve-dish-btn { background: #2ecc71; color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; font-family: 'Fredoka One'; box-shadow: 0 4px 0 #27ae60; }
+#serve-dish-btn:active { transform: translateY(4px); box-shadow: none; }
+
 #recipe-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 300; display: flex; justify-content: center; align-items: center; }
 .book-content { position: relative; background: #fffcf5; width: 90%; max-width: 600px; height: 80%; padding: 20px; border-radius: 5px; border-right: 10px solid #8b4513; display: flex; flex-direction: column; }
 #close-book-btn { position: absolute; top: 10px; right: 10px; background: #e74c3c; color: white; width: 30px; height: 30px; border-radius: 50%; font-size: 1rem; border: none; cursor: pointer; }
-/* Внутри .book-content или отдельно */
+.book-page-text { font-family: 'Courier New', monospace; flex-grow: 1; overflow-y: auto; line-height: 1.5; font-size: 1.1rem; padding-right: 10px; }
+.book-nav { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid #ccc; }
+.book-btn { background: #8b4513; color: white; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer; }
 
-.book-page-text { 
-    font-family: 'Courier New', monospace; 
-    flex-grow: 1; 
-    overflow-y: auto; 
-    line-height: 1.5; 
-    font-size: 1.1rem; 
-    padding-right: 10px; /* Отступ от скролла */
-}
+/* =======================================================
+   6. ХОРРОР И КОНЦОВКИ (ФИНАЛ)
+   ======================================================= */
 
-/* Стиль для комментариев Крапивы */
-.book-page-text i {
-    color: #8b4513;
-    font-size: 0.9rem;
-    display: block;
-    margin-bottom: 10px;
-    border-bottom: 1px dashed #ccc;
-    padding-bottom: 5px;
-}
-
-/* Стиль для заголовков рецептов */
-.book-page-text h3 {
-    color: #d35400;
-    margin-top: 0;
-    font-family: 'Fredoka One';
-    text-decoration: underline;
-}
-
-/* Стиль списка */
-.book-page-text ol {
-    padding-left: 20px;
-}
-.book-page-text li {
-    margin-bottom: 5px;
-}
-.book-nav { display: flex; justify-content: space-between; margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 10px; }
-
-/* ==========================================
-   6. ФОНЫ И ХОРРОР СТИЛИ
-   ========================================== */
-
-#vn-screen {
-    /* Мы используем linear-gradient, чтобы наложить белый полупрозрачный слой (0.7 = 70% непрозрачности) поверх картинки */
-    background: linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4)), 
-                url('assets/bg_kitchen_normal.png') no-repeat center center;
-    
-    background-size: cover;
-    /* Остальные свойства оставь как были (position, z-index и т.д.) */
-    height: 100%; 
-    width: 100%; 
-    position: relative; 
-    display: flex; 
-    flex-direction: column; 
-}
-
-/* ХОРРОР МОД */
-body.horror-mode #game-container {
-    filter: sepia(0.3) contrast(1.1) brightness(0.8);
-    border-color: #520000; /* Темно-красная рамка */
-}
-
-/* ФОН ХОРРОРА */
+body.horror-mode #game-container { filter: sepia(0.3) contrast(1.1) brightness(0.8); border-color: #520000; }
 body.horror-mode #vn-screen {
-    /* Здесь мы накладываем ЧЕРНЫЙ (0,0,0) полупрозрачный слой, чтобы кухня была мрачной */
-    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
-                url('assets/bg_kitchen_horror.png') no-repeat center center;
-    background-size: cover;
-    background-color: #1a0505;
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('assets/bg_kitchen_horror.png') no-repeat center center;
+    background-size: cover; background-color: #000;
 }
+body.horror-mode #vn-ui { background: #1a0000; border-top: 5px solid #8b0000; }
+body.horror-mode #speaker-name { background: #300; color: #f00; border: 3px solid #500; font-family: 'Courier New'; letter-spacing: 2px; }
+body.horror-mode #dialogue-text { color: #ff6b6b; font-family: 'Courier New'; font-weight: bold; }
 
-/* ИНТЕРФЕЙС ХОРРОРА */
-body.horror-mode #vn-ui {
-    background: #0f0505; /* Почти черный фон */
-    border-top: 5px solid #800000; /* Кровавая граница */
-}
-
-/* ИМЯ ПЕРСОНАЖА (ИСПРАВЛЕНИЕ РОЗОВОГО) */
-body.horror-mode #speaker-name {
-    background: #2a0000; /* Темно-бордовый фон */
-    color: #ff0000;      /* Красный текст */
-    border: 3px solid #ff0000; /* Ярко-красная рамка */
-    border-radius: 5px;  /* Острые углы вместо круглых */
-    font-family: 'Courier New', monospace; /* "Пишущая машинка" */
-    text-shadow: 0 0 5px #ff0000;
-    box-shadow: 0 5px 20px rgba(255, 0, 0, 0.2);
-    top: -20px; /* Чуть поправим позицию */
-}
-
-/* ТЕКСТ ДИАЛОГА */
-body.horror-mode #dialogue-text {
-    color: #ff4d4d;
-    font-family: 'Courier New', monospace;
-    text-shadow: 1px 0 #300;
-}
-
-/* КНОПКИ ВЫБОРА */
+/* КНОПКИ В ХОРРОРЕ */
 body.horror-mode .choice-btn {
-    background: #111;
-    color: #a00;
-    border: 2px solid #500;
-    font-family: 'Courier New', monospace;
-    border-radius: 5px; /* Острые углы */
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    background: #000; border: 2px solid #ff0000; color: #ff0000;
+    font-family: 'Courier New', monospace; font-weight: bold; text-transform: uppercase;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
 }
 body.horror-mode .choice-btn:hover {
-    background: #500;
-    color: #000;
-    box-shadow: 0 0 10px #f00;
+    background: #300000; color: #fff; box-shadow: 0 0 15px rgba(255, 0, 0, 0.6); transform: scale(1.05);
 }
 
-/* ЭКРАНЧИК */
-body.horror-mode #monitor-helper,
-body.horror-mode #monitor-helper.kitchen-mode {
-    background-image: url('assets/horror_telek.png'); /* Сделай файл horror_telek.png */
-    filter: none;
-}
-
-body.horror-mode #next-btn, body.horror-mode #cook-btn {
-    color: #f00;
-    text-shadow: 2px 2px 0 #500;
-}
-
-/* ФИНАЛЬНЫЙ АРТ */
+/* СЛОЙ АРТА/ЧЕРНОТЫ */
 #ending-art-layer {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    z-index: 50; /* Поверх персонажей, но под интерфейсом диалога */
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 50; 
     background-color: #000;
+    background-size: cover; background-position: center; background-repeat: no-repeat;
 }
 
-/* СКРИМЕР */
-#jumpscare-layer {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    z-index: 9999; /* Поверх вообще всего */
-    background: black;
-    display: flex;
-    justify-content: center;
+/* ИНТЕРФЕЙС ПОВЕРХ АРТА */
+#vn-screen { z-index: 60 !important; position: relative; }
+
+/* === РЕЖИМ 1: ЧЕРНАЯ ПУСТОТА (ИСПРАВЛЕНО ОБРЕЗАНИЕ) === */
+.black-void-ui {
+    background: transparent !important; 
+    border: none !important; box-shadow: none !important;
+    position: absolute !important; top: 0; left: 0; width: 100%; height: 100%;
+    
+    display: flex !important; 
+    flex-direction: column; 
+    justify-content: center; /* Центруем по вертикали */
     align-items: center;
-}
-#jumpscare-layer img {
-    width: 80%;
-    height: auto;
-    animation: shake 0.1s infinite;
-}
-@keyframes shake {
-    0% { transform: translate(1px, 1px) rotate(0deg); }
-    10% { transform: translate(-1px, -2px) rotate(-1deg); }
-    20% { transform: translate(-3px, 0px) rotate(1deg); }
-    30% { transform: translate(3px, 2px) rotate(0deg); }
-    40% { transform: translate(1px, -1px) rotate(1deg); }
-    50% { transform: translate(-1px, 2px) rotate(-1deg); }
-    60% { transform: translate(-3px, 1px) rotate(0deg); }
-    70% { transform: translate(3px, 1px) rotate(-1deg); }
-    80% { transform: translate(-1px, -1px) rotate(1deg); }
-    90% { transform: translate(1px, 2px) rotate(0deg); }
-    100% { transform: translate(1px, -2px) rotate(-1deg); }
+    padding: 20px; 
+    box-sizing: border-box;
+    overflow: hidden; /* Чтобы сам контейнер не скроллился */
 }
 
-/* --- СТИЛИ КОНЦОВОК --- */
-
-/* Прозрачный интерфейс (история продолжается на фоне картинки) */
-#vn-ui.transparent-ui {
-    background: rgba(0, 0, 0, 0.7) !important; /* Полупрозрачный черный */
-    border-top: 2px solid rgba(255, 255, 255, 0.3) !important;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-}
-#vn-ui.transparent-ui #dialogue-text {
-    color: #fff !important;
-    text-shadow: 1px 1px 2px black;
-}
-#vn-ui.transparent-ui #speaker-name {
-    background: transparent !important;
+.black-void-ui #dialogue-box {
+    padding: 0 !important; 
+    align-items: center !important; 
+    justify-content: center !important;
+    text-align: center !important; 
+    width: 100% !important; 
+    max-width: 900px; 
     border: none !important;
-    color: #ffb7d5 !important;
-    text-shadow: 1px 1px 5px black;
-    font-size: 1.4rem;
-    top: -40px;
-    left: 20px;
-    padding: 0;
-    box-shadow: none;
-}
-
-/* Финальная карточка */
-.ending-card-container {
+    
+    /* ВАЖНО: Разрешаем блоку сжиматься, но не более чем на 70% экрана */
+    flex-shrink: 1; 
+    max-height: 70vh; 
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    width: 100%;
-    background: black;
+}
+
+.black-void-ui #speaker-name { display: none !important; }
+
+.black-void-ui #dialogue-text { 
+    color: #fff !important; 
+    
+    /* Шрифт теперь зависит от ВЫСОТЫ экрана (vh), чтобы не быть слишком огромным */
+    font-size: clamp(1rem, 3vh, 1.8rem) !important; 
+    line-height: 1.5 !important;
+    text-align: center !important; 
+    font-family: 'Nunito', sans-serif !important;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8); 
+    
+    /* ВАЖНО: Если текст длинный — появится скролл, а не обрезание */
+    height: auto !important; 
+    max-height: 100% !important;
+    overflow-y: auto !important; 
+    padding: 0 10px; /* Отступы для скроллбара */
+    
+    /* Скрываем скроллбар визуально (для красоты), но скролл останется */
+    scrollbar-width: none; 
+}
+.black-void-ui #dialogue-text::-webkit-scrollbar { display: none; }
+
+.black-void-ui #vn-controls {
+    position: static !important; 
+    margin-top: 20px !important; 
+    background: none !important;
+    width: 100% !important; 
+    justify-content: center !important;
+    flex-shrink: 0; /* Кнопка не должна сжиматься */
+}
+
+.black-void-ui #next-btn {
+    color: white !important; font-size: 3rem !important; opacity: 0.8; 
+    border: 2px solid white !important; border-radius: 50%;
+    width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;
+}
+.black-void-ui #next-btn:hover { opacity: 1; background: rgba(255,255,255,0.2); }
+
+/* === РЕЖИМ 2: ПРОЗРАЧНЫЙ НИЗ (ДЛЯ АРТОВ) === */
+#vn-ui.transparent-ui {
+    background: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 50%, rgba(0,0,0,0) 100%) !important;
+    border: none !important;
+    position: absolute; bottom: 0; left: 0; width: 100%; height: auto !important; min-height: 250px;
+    display: flex !important; flex-direction: column; justify-content: flex-end; align-items: center;
+    padding: 20px 20px 40px 20px; box-sizing: border-box;
+}
+#vn-ui.transparent-ui #speaker-name {
+    position: relative !important; top: auto !important; left: auto !important; transform: none !important;
+    background: transparent !important; border: none !important; box-shadow: none !important;
+    color: #ffb7d5 !important; font-family: 'Fredoka One', cursive; font-size: 2rem !important;
+    text-shadow: 2px 2px 4px #000; margin-bottom: 20px !important; padding: 0 !important; width: auto !important;
+}
+#vn-ui.transparent-ui #dialogue-text {
+    color: #fff !important; font-family: 'Nunito', sans-serif !important; text-shadow: 1px 1px 2px black;
+    font-size: 1.3rem !important; line-height: 1.6; text-align: center;
+    width: 80% !important; max-width: 800px; flex-grow: 0 !important; height: auto !important; overflow: visible !important; margin-bottom: 10px;
+}
+#vn-ui.transparent-ui #vn-controls {
+    position: absolute !important; bottom: 30px !important; right: 30px !important; background: none !important; z-index: 101;
+}
+#vn-ui.transparent-ui #next-btn {
+    color: rgba(255, 255, 255, 0.6) !important; font-size: 4rem !important; filter: drop-shadow(0 0 5px black); transition: 0.3s;
+}
+#vn-ui.transparent-ui #next-btn:hover { color: white !important; transform: scale(1.1); }
+
+/* ЭФФЕКТЫ */
+#flash-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 200; pointer-events: none; opacity: 0; }
+.flash-anim { animation: flashEffect 4s ease-out forwards; }
+@keyframes flashEffect { 0% { opacity: 1; } 100% { opacity: 0; } }
+
+#jumpscare-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; background: black; display: flex; justify-content: center; align-items: center; }
+#jumpscare-layer img { width: 90%; animation: shake 0.05s infinite; }
+
+/* === КАРТОЧКА КОНЦОВКИ (ИСПРАВЛЕНО) === */
+.ending-card-container {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    height: 100%; width: 100%; background: black; animation: fadeIn 3s ease-in; 
+    z-index: 10001; position: relative;
+    padding: 20px; box-sizing: border-box; /* Чтобы не прилипало к краям */
 }
 .ending-card {
-    background: #1a1a1a;
-    padding: 10px;
-    border-radius: 10px;
-    text-align: center;
-    max-width: 80%;
-    box-shadow: 0 0 30px rgba(0,0,0,0.5);
-    margin-bottom: 20px;
+    background: #1a1a1a; padding: 30px; border-radius: 20px; text-align: center; 
+    width: 100%; max-width: 600px; /* Чуть шире */
+    display: flex; flex-direction: column; align-items: center; position: relative;
+    max-height: 80vh; /* Чтобы не улетала за экран */
+    overflow-y: auto; /* Скролл на случай маленьких экранов */
 }
-.ending-card img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 5px;
-    display: block;
+.ending-card img { 
+    width: 100%; 
+    height: auto; 
+    max-height: 400px; /* Увеличил высоту */
+    object-fit: contain; /* ВАЖНО: Картинка теперь влезает целиком! */
+    border-radius: 5px; margin-bottom: 20px; 
+    background: #000;
 }
-.ending-text {
-    margin-top: 15px;
-    color: white;
-    font-family: 'Fredoka One', cursive;
-}
-.ending-text h2 {
-    font-size: 2rem;
-    margin: 0;
-    color: #ffd700; /* Золотой */
+.ending-text h2 { 
+    font-family: 'Fredoka One', cursive; font-size: 2rem; margin: 0 0 10px 0; 
+    text-transform: uppercase; letter-spacing: 2px;
 }
 .ending-text p {
-    font-size: 1.2rem;
-    margin: 5px 0 0 0;
-    opacity: 0.8;
+    font-family: 'Nunito', sans-serif; font-size: 1.1rem; color: #bbb; margin: 0; font-style: italic;
 }
+.good-border { border: 3px solid #ffd700; box-shadow: 0 0 30px rgba(255, 215, 0, 0.2); }
+.good-border h2 { color: #ffd700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+.bad-border { border: 3px solid #ff4444; box-shadow: 0 0 30px rgba(255, 68, 68, 0.2); }
+.bad-border h2 { color: #ff4444; text-shadow: 0 0 10px rgba(255, 68, 68, 0.5); }
 
-/* Рамки для карточек */
-.good-border { border: 4px solid #4CAF50; box-shadow: 0 0 20px #4CAF50; }
-.bad-border { border: 4px solid #F44336; box-shadow: 0 0 20px #F44336; }
-
-/* Анимация появления */
-.fade-in { animation: fadeIn 2s ease-in; }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-/* ВСПЫШКА */
-#flash-overlay {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: white;
-    z-index: 100; /* Поверх всего */
-    pointer-events: none; /* Чтобы можно было кликать сквозь вспышку */
-    opacity: 0;
+.ending-card-container .btn-primary {
+    margin-top: 30px; background: transparent; border: 3px solid white; color: white;
+    font-family: 'Fredoka One', cursive; font-size: 1.5rem; padding: 12px 40px;
+    border-radius: 50px; cursor: pointer; transition: all 0.3s ease;
+    box-shadow: 0 0 15px rgba(255,255,255,0.1);
 }
-
-.flash-anim {
-    animation: flashEffect 2s ease-out forwards;
+.ending-card-container .btn-primary:hover {
+    background: white; color: black; transform: scale(1.05); box-shadow: 0 0 25px rgba(255,255,255,0.5);
 }
+.ending-card-container .btn-primary:active { transform: scale(0.95); }
 
-@keyframes flashEffect {
-    0% { opacity: 1; }
-    100% { opacity: 0; }
+/* Кнопка "..." в плохой концовке */
+#vn-ui.transparent-ui .choice-btn {
+    background: transparent;
+    border: 2px solid #ff4444;
+    color: #ff4444;
+    font-size: 1.5rem;
+    letter-spacing: 10px;
+    padding: 10px 40px;
+    transition: all 0.3s ease;
 }
-
-/* ЧЕРНЫЙ ЭКРАН (ТЕКСТ В ПУСТОТЕ) */
-/* ЧЕРНЫЙ ЭКРАН (ТЕКСТ В ПУСТОТЕ) */
-.black-void-ui {
-    background: transparent !important;
-    border: none !important;
-    color: #fff !important;
-    text-shadow: 0 0 10px rgba(255,255,255,0.8) !important;
-    
-    /* ПОЗИЦИОНИРОВАНИЕ */
-    position: fixed !important; /* Fixed, чтобы точно быть поверх всего */
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
-    
-    width: 80% !important;
-    text-align: center !important;
-    font-size: 1.8rem !important; 
-    font-family: 'Fredoka One', cursive !important;
-    
-    pointer-events: none; 
-    z-index: 9999 !important; /* Самый высокий приоритет */
-    
-    /* СБРОС СТАРЫХ СТИЛЕЙ */
-    height: auto !important;
-    bottom: auto !important;
-    min-height: 0 !important;
-    padding: 20px !important;
+#vn-ui.transparent-ui .choice-btn:hover {
+    background: #4d0000;
+    color: white;
+    box-shadow: 0 0 15px #ff4444;
 }
-
-/* Скрываем имя, но оставляем текст */
-.black-void-ui #speaker-name {
-    display: none !important; 
-}
-
-.black-void-ui #dialogue-text {
-    color: white !important;
-    font-size: 1.8rem !important;
-    text-align: center !important;
-}
-
-/* ВАЖНО: Кнопка "Далее" должна быть видна и кликабельна */
-#vn-controls {
-    z-index: 10000 !important; /* Выше текста */
-}
-
-/* Скрываем кнопки и стрелку, если мы в режиме "Тьмы", 
-   чтобы они не мешали кликать по всему экрану для продолжения */
-.black-void-ui #vn-controls, 
-.black-void-ui #speaker-name {
-    display: none !important;
-}
-
-/* Важно: Стрелка должна быть кликабельной 
-#vn-controls {
-    z-index: 9999 !important; /* Поверх всего 
-}
-/* Скрываем имя в режиме пустоты, если оно не нужно, или стилизуем 
-.black-void-ui #speaker-name {
-    display: none !important; 
-}*/
